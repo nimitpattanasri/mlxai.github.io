@@ -6,8 +6,8 @@
 </description>
     <link>https://nimitpattanasri.github.io/</link>
     <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 05 Jan 2017 22:08:15 +0700</pubDate>
-    <lastBuildDate>Thu, 05 Jan 2017 22:08:15 +0700</lastBuildDate>
+    <pubDate>Fri, 06 Jan 2017 00:20:05 +0700</pubDate>
+    <lastBuildDate>Fri, 06 Jan 2017 00:20:05 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -18,7 +18,7 @@
   &lt;p&gt;The goal of this exercise is to wrap our head around vectorized array operations with NumPy.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;First, let’s warm up with finding L2 distances by implementing two for-loops. The code at line 21, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.&lt;/p&gt;
+&lt;p&gt;First, let’s warm up with finding L2 distances by implementing two for-loops. The code &lt;code&gt;np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))&lt;/code&gt;, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;
   &lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_two_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
@@ -49,7 +49,7 @@
 
 &lt;hr /&gt;
 
-&lt;p&gt;Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast at line 15.&lt;/p&gt;
+&lt;p&gt;Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast &lt;code&gt;self.X_train - X[i,:]&lt;/code&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;
   &lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_one_loop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;

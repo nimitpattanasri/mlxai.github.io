@@ -79,7 +79,7 @@
   <p>The goal of this exercise is to wrap our head around vectorized array operations with NumPy.</p>
 </blockquote>
 
-<p>First, let’s warm up with finding L2 distances by implementing two for-loops. The code at line 21, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.</p>
+<p>First, let’s warm up with finding L2 distances by implementing two for-loops. The code <code>np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))</code>, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.</p>
 
 <div class="highlight">
   <pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">compute_distances_two_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
@@ -110,7 +110,7 @@
 
 <hr />
 
-<p>Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast at line 15.</p>
+<p>Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast <code>self.X_train - X[i,:]</code>.</p>
 
 <div class="highlight">
   <pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">compute_distances_one_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>

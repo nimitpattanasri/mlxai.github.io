@@ -7,9 +7,9 @@ Finding distances between training and test data is essential to a k-Nearest Nei
 
 > The goal of this exercise is to wrap our head around vectorized array operations with NumPy.
 
-First, let’s warm up with finding L2 distances by implementing two for-loops. The code at line 21, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.
+First, let’s warm up with finding L2 distances by implementing two for-loops. The code `np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))`, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.
 
-{% highlight python linenos=table %}
+{% highlight python %}
 def compute_distances_two_loops(self, X):
     """
     Compute the distance between each test point in X and each training point
@@ -37,9 +37,9 @@ def compute_distances_two_loops(self, X):
 
 ---
 
-Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast at line 15.
+Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast `self.X_train - X[i,:]`.
 
-{% highlight python linenos=table %}
+{% highlight python %}
 def compute_distances_one_loop(self, X):
     """
     Compute the distance between each test point in X and each training point
@@ -69,7 +69,7 @@ The exercise instead gives a hint of how to vectorize these operations efficient
 
 [![An illustration of fully vectorized implementation]({{ site.url }}/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg)]({{ site.url }}/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg){:target="_blank"}
 
-{% highlight python linenos=table %}
+{% highlight python %}
 def compute_distances_no_loops(self, X):
     """
     Compute the distance between each test point in X and each training point
