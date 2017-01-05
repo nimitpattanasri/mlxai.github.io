@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Finding distances between data points with NumPy</title>
+  <meta name="description" content="Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook knn.ipynb from Stanford CS231n will walk us through implementing the kNN..." />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@nimitpattanasri" />
+    <meta name="twitter:title" content="Finding distances between data points with NumPy" />
+    <meta name="twitter:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
+    
+    <meta name="twitter:description"  content="Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook knn.ipynb from Stanford CS231n will walk us through implementing the kNN..." />
+    
+  
+  
+  <meta property="og:site_name" content="ML x AI" />
+  <meta property="og:title" content="Finding distances between data points with NumPy"/>
+  
+  <meta property="og:description" content="Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook knn.ipynb from Stanford CS231n will walk us through implementing the kNN..." />
+  
+  <meta property="og:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
+  <meta property="og:url" content="http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html" >
+  <meta property="og:type" content="blog" />
+  <meta property="article:published_time" content="2017-01-03T00:00:00+07:00">
+
+  <link rel="canonical" href="http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">Finding distances between data points with NumPy</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+              on
+              <time datetime="2017-01-03T00:00:00+07:00">03 Jan 2017</time>
+              <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <div class="post-reading">
+            <span class="post-reading-time"></span> read
+          </div>
+          <a name="topofpage"></a>
+          <p>Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip">knn.ipynb</a> from Stanford CS231n will walk us through implementing the kNN classifier for classifying images data.</p>
+
+<blockquote>
+  <p>The goal of this exercise is to wrap our head around vectorized array operations with NumPy.</p>
+</blockquote>
+
+<p>First, let’s warm up with finding L2 distances by implementing two for-loops. The code at line 21, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.</p>
+
+<div class="highlight">
+  <pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">compute_distances_two_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="s">"""
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a nested loop over both the training data and the 
+    test data.
+    Input:
+    X - An num_test x dimension array where each row is a test point.
+    Output:
+    dists - A num_test x num_train array where dists[i, j] is the distance
+            between the ith test point and the jth training point.
+    """</span>
+    <span class="n">num_test</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_test</span><span class="p">,</span> <span class="n">num_train</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_test</span><span class="p">):</span>
+      <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_train</span><span class="p">):</span>
+        <span class="c">#####################################################################</span>
+        <span class="c"># Compute the l2 distance between the ith test point and the jth    #</span>
+        <span class="c"># training point, and store the result in dists[i, j]               #</span>
+        <span class="c">#####################################################################</span>
+        <span class="n">dists</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">[</span><span class="n">j</span><span class="p">,:])))</span>
+    <span class="k">return</span> <span class="n">dists</span></code></pre>
+</div>
+
+<center><em><sup>cs231n/classifiers/k_nearest_neighbor.py</sup></em></center>
+
+<hr />
+
+<p>Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast at line 15.</p>
+
+<div class="highlight">
+  <pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">compute_distances_one_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="s">"""
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a single loop over the test data.
+    Input / Output: Same as compute_distances_two_loops
+    """</span>
+    <span class="n">num_test</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_test</span><span class="p">,</span> <span class="n">num_train</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_test</span><span class="p">):</span>
+      <span class="c">#######################################################################</span>
+      <span class="c"># Compute the l2 distance between the ith test point and all training #</span>
+      <span class="c"># points, and store the result in dists[i, :].                        #</span>
+      <span class="c">#######################################################################</span>
+      <span class="n">dists</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">dists</span></code></pre>
+</div>
+
+<center><em><sup>cs231n/classifiers/k_nearest_neighbor.py</sup></em></center>
+
+<hr />
+
+<p>Last, to implement the function without using loops is a fun exercise. One may be tempted to use two gigantic broadcasts as explained in <a href="http://scipy.github.io/old-wiki/pages/EricsBroadcastingDoc">here</a>. This is an elegant but inefficient solution.</p>
+
+<p>The exercise instead gives a hint of how to vectorize these operations efficiently with one matrix multiplication and two broadcast sums. The trick is to use a quadratic form.</p>
+
+<p><a href="http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg" target="_blank"><img src="http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg" alt="A quadratic form with some rearrangement suggesting two broadcast sums and one matrix multiplication" /></a></p>
+
+<p><a href="http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg" target="_blank"><img src="http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg" alt="An illustration of fully vectorized implementation" /></a></p>
+
+<div class="highlight">
+  <pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">compute_distances_no_loops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="s">"""
+    Compute the distance between each test point in X and each training point
+    in self.X_train using no explicit loops.
+    Input / Output: Same as compute_distances_two_loops
+    """</span>
+    <span class="n">num_test</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_test</span><span class="p">,</span> <span class="n">num_train</span><span class="p">))</span> 
+    <span class="c">#########################################################################</span>
+    <span class="c"># Compute the l2 distance between all test points and all training      #</span>
+    <span class="c"># points without using any explicit loops, and store the result in      #</span>
+    <span class="c"># dists.                                                                #</span>
+    <span class="c"># HINT: Try to formulate the l2 distance using matrix multiplication    #</span>
+    <span class="c">#       and two broadcast sums.                                         #</span>
+    <span class="c">#########################################################################</span>
+
+    <span class="c"># Don't do this gigantic broadcasts. Too long to execute...</span>
+    <span class="c"># dists = np.sqrt(np.sum(np.square(X[:,np.newaxis,:] - self.X_train[np.newaxis,:,:]), axis=2))</span>
+    
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">)</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">M</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">te</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dists</span></code></pre>
+</div>
+
+<center><i><sup>cs231n/classifiers/k_nearest_neighbor.py</sup></i></center>
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-twitter" href="http://twitter.com/share?text=Finding+distances+between+data+points+with+NumPy&amp;url=http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy"
+                  onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+                <i class="fa fa-twitter"></i><span class="hidden">twitter</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4>Nimit Pattanasri</h4>
+              <p class="bio"></p>
+              <hr>
+              <p class="published">Published <time datetime="2017-01-03 00:00">03 Jan 2017</time></p>
+            </section>
+          </div>
+          
+          <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>              
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2017<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
+              </div>
+            </footer>
+          </div>
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cover-opt.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">ML x AI</h1>
+        <h2 class="blog-description">Notes for my journey in machine learning and artificial intelligence
+</h2>
+        <a href=/ class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  </body>
+</html>
