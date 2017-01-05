@@ -22,7 +22,8 @@ author_image: "/assets/images/nimit-opt.jpg"
 
 paginate:	5
 
-url: "http://127.0.0.1:4000" # the base hostname & protocol for your site
+#url: "http://127.0.0.1:4000" # the base hostname & protocol for your site
+url: "https://nimitpattanasri.github.io" # the base hostname & protocol for your site
 baseurl: ""
 #used to display twitter cards
 twitter_handle: '@nimitpattanasri'

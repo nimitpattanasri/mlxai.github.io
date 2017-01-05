@@ -4,10 +4,10 @@
     <title>ML x AI</title>
     <description>Notes for my journey in machine learning and artificial intelligence
 </description>
-    <link>http://127.0.0.1:4000/</link>
-    <atom:link href="http://127.0.0.1:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 05 Jan 2017 21:58:13 +0700</pubDate>
-    <lastBuildDate>Thu, 05 Jan 2017 21:58:13 +0700</lastBuildDate>
+    <link>https://nimitpattanasri.github.io/</link>
+    <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Thu, 05 Jan 2017 22:08:15 +0700</pubDate>
+    <lastBuildDate>Thu, 05 Jan 2017 22:08:15 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -78,9 +78,9 @@
 
 &lt;p&gt;The exercise instead gives a hint of how to vectorize these operations efficiently with one matrix multiplication and two broadcast sums. The trick is to use a quadratic form.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; alt=&quot;A quadratic form with some rearrangement suggesting two broadcast sums and one matrix multiplication&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; alt=&quot;A quadratic form with some rearrangement suggesting two broadcast sums and one matrix multiplication&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; alt=&quot;An illustration of fully vectorized implementation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; alt=&quot;An illustration of fully vectorized implementation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;
   &lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_no_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
@@ -114,8 +114,8 @@
 &lt;center&gt;&lt;i&gt;&lt;sup&gt;cs231n/classifiers/k_nearest_neighbor.py&lt;/sup&gt;&lt;/i&gt;&lt;/center&gt;
 </description>
         <pubDate>Tue, 03 Jan 2017 00:00:00 +0700</pubDate>
-        <link>http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html</link>
-        <guid isPermaLink="true">http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html</guid>
+        <link>https://nimitpattanasri.github.io/2017/01/03/finding-distances-between-data-points-with-numpy.html</link>
+        <guid isPermaLink="true">https://nimitpattanasri.github.io/2017/01/03/finding-distances-between-data-points-with-numpy.html</guid>
         
         
       </item>
