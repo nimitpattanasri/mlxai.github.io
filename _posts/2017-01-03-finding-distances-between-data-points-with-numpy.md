@@ -37,7 +37,7 @@ def compute_distances_two_loops(self, X):
 
 ---
 
-Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast `self.X_train - X[i,:]`.
+Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast `X[i,:] - self.X_train`.
 
 {% highlight python %}
 def compute_distances_one_loop(self, X):
@@ -54,7 +54,7 @@ def compute_distances_one_loop(self, X):
       # Compute the l2 distance between the ith test point and all training #
       # points, and store the result in dists[i, :].                        #
       #######################################################################
-      dists[i,:] = np.sqrt(np.sum(np.square(self.X_train - X[i,:]), axis=1))
+      dists[i,:] = np.sqrt(np.sum(np.square(X[i,:] - self.X_train), axis=1))
     return dists
 {% endhighlight %}
 <center><em><sup>cs231n/classifiers/k_nearest_neighbor.py</sup></em></center>
@@ -98,3 +98,9 @@ def compute_distances_no_loops(self, X):
     return dists
 {% endhighlight %}
 <center><i><sup>cs231n/classifiers/k_nearest_neighbor.py</sup></i></center>
+
+<br/>
+
+###### Further Reading
+* [http://cs231n.github.io/classification/](http://cs231n.github.io/classification/)
+* [http://cs231n.github.io/assignments2016/assignment1/](http://cs231n.github.io/assignments2016/assignment1/)

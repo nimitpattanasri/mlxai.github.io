@@ -20,7 +20,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@nimitpattanasri" />
     <meta name="twitter:title" content="ML x AI" />
-    <meta name="twitter:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
+    <meta name="twitter:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
     
     <meta name="twitter:description" content="Notes for my journey in machine learning and artificial intelligence" />
     
@@ -31,12 +31,12 @@
   
   <meta property="og:description" content="Notes for my journey in machine learning and artificial intelligence" />
   
-  <meta property="og:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
-  <meta property="og:url" content="https://nimitpattanasri.github.io/" >
+  <meta property="og:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
+  <meta property="og:url" content="http://127.0.0.1:4000/" >
   <meta property="og:type" content="blog" />
   
 
-  <link rel="canonical" href="https://nimitpattanasri.github.io/"/>
+  <link rel="canonical" href="http://127.0.0.1:4000/"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -66,7 +66,7 @@
 
 <header class="blog-header">
     
-      <a class="blog-logo" href="https://nimitpattanasri.github.io" style="background-image: url('/assets/images/logo.jpg')">ML x AI</a>
+      <a class="blog-logo" href="http://127.0.0.1:4000" style="background-image: url('/assets/images/logo.jpg')">ML x AI</a>
     
     <h1 class="blog-title">ML x AI</h1>
     <h2 class="blog-description">Notes for my journey in machine learning and artificial intelligence
@@ -97,6 +97,23 @@
     
 
     <div class="cf frame">
+      
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
+          <div class="article-item">
+            <header class="post-header">
+              <h2 class="post-title" itemprop="name"><a href="/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" itemprop="url">Vectorized implementation of SVM loss and gradient update</a></h2>
+            </header>
+            <section class="post-excerpt" itemprop="description">
+              <p>SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights.
+
+</p>
+            </section>
+            <div class="post-meta">
+              <time datetime="06 January 2017">06 January 2017</time>
+<!--            <span class="post-tags-set">on <span class="post-tag-">, <a href="/tag/"></a></span></span>-->
+            </div>
+          </div>
+        </article>
       
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
           <div class="article-item">
@@ -187,7 +204,21 @@
   });
 }(jQuery));
 </script>
+<!--
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
+<script>
+  $("script[type='math/tex']").replaceWith(function() {
+      var tex = $(this).text();
+      return katex.renderToString(tex, {displayMode: false});
+  });
 
+  $("script[type='math/tex; mode=display']").replaceWith(function() {
+      var tex = $(this).html();
+      return katex.renderToString(tex.replace(/%.*/g, ''), {displayMode: true});
+  });
+</script>
+-->
 
 
   </body>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Vectorized implementation of SVM loss and gradient update</title>
+  <meta name="description" content="SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights." />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@nimitpattanasri" />
+    <meta name="twitter:title" content="Vectorized implementation of SVM loss and gradient update" />
+    <meta name="twitter:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
+    
+    <meta name="twitter:description"  content="SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights." />
+    
+  
+  
+  <meta property="og:site_name" content="ML x AI" />
+  <meta property="og:title" content="Vectorized implementation of SVM loss and gradient update"/>
+  
+  <meta property="og:description" content="SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights." />
+  
+  <meta property="og:image" content="http://127.0.0.1:4000/assets/images/logo.jpg" />
+  <meta property="og:url" content="http://127.0.0.1:4000/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" >
+  <meta property="og:type" content="blog" />
+  <meta property="article:published_time" content="2017-01-06T00:00:00+07:00">
+
+  <link rel="canonical" href="http://127.0.0.1:4000/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">Vectorized implementation of SVM loss and gradient update</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+              on
+              <time datetime="2017-01-06T00:00:00+07:00">06 Jan 2017</time>
+              <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <div class="post-reading">
+            <span class="post-reading-time"></span> read
+          </div>
+          <a name="topofpage"></a>
+          <p>SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights.</p>
+
+<h6 id="loss-function">Loss function</h6>
+
+<p>Quality of weights is often expressed by a loss function, our unhappiness with classification result, and we want its value to be as small as possible. To minimize the loss, we have to define a loss function and find their partial derivatives with respect to the weights to update them iteratively.</p>
+
+<p>SVM loss function can be defined as:</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+L_i = \sum_{j\neq y_i} \left[ \max(0, x_iw_j - x_iw_{y_i} + \Delta) \right] \tag{1}
+\end{equation}
+</script>
+
+<p>where</p>
+
+<ul>
+  <li><script type="math/tex">i</script> iterates over all N examples,</li>
+  <li><script type="math/tex">j</script> iterates over all C classes,</li>
+  <li><script type="math/tex">L_i</script> is loss for classifying a single example <script type="math/tex">x_i</script> (row vector), </li>
+  <li><script type="math/tex">w_j</script> is the weights (column vector) for computing the score of class <script type="math/tex">j</script>, </li>
+  <li><script type="math/tex">y_i</script> is the index of the correct class of <script type="math/tex">x_i</script>, and</li>
+  <li><script type="math/tex">\Delta</script> is a margin parameter</li>
+</ul>
+
+<p>Intuitively, SVM wants score, <script type="math/tex">x_iw_{y_i}</script>, of the correct class, <script type="math/tex">y_i</script>, to be greater than any other classes, <script type="math/tex">x_iw_j</script>, by at least <script type="math/tex">\Delta</script> such that the loss becomes zero (clamped with the max operation). </p>
+
+<h6 id="analytic-gradient">Analytic gradient</h6>
+
+<p>Gradient of the loss function for a single example can be written in full detail as:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\nabla_{w} L_i 
+  =
+  \begin{bmatrix}
+    \frac{dL_i}{dw_1} & \frac{dL_i}{dw_2} & \cdots & \frac{dL_i}{dw_C} 
+  \end{bmatrix}
+  = 
+  \begin{bmatrix}
+    \frac{dL_i}{dw_{11}} & \frac{dL_i}{dw_{21}} & \cdots & \frac{dL_i}{dw_{y_i1}} & \cdots & \frac{dL_i}{dw_{C1}} \\
+    \vdots & \ddots \\
+    \frac{dL_i}{dw_{1D}} & \frac{dL_i}{dw_{2D}} & \cdots & \frac{dL_i}{dw_{y_iD}} & \cdots & \frac{dL_i}{dw_{CD}} 
+  \end{bmatrix}
+ %]]></script>
+
+<p>First, let’s find a sub-gradient <script type="math/tex">\frac{dL_i}{dw_{11}}</script> by considering all the terms in equation (1):</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\begin{align*}
+L_i = &\max(0, x_{i1}w_{11} + x_{i2}w_{12} \ldots + x_{iD}w_{1D} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta) + \\
+ &\max(0, x_{i1}w_{21} + x_{i2}w_{22} \ldots + x_{iD}w_{2D} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta) + \\
+&\quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \vdots \\
+&\max(0, x_{i1}w_{C1} + x_{i2}w_{C2} \ldots + x_{iD}w_{CD} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta)
+\end{align*}
+ %]]></script>
+
+<p>For a general case, if <script type="math/tex">(x_iw_1 - x_iw_{y_i} + \Delta) > 0</script>:</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dL_i}{dw_{11}} = x_{i1}
+\end{equation}
+</script>
+
+<p>Equivalently, using an indicator function:</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dL_i}{dw_{11}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta > 0) x_{i1}
+\end{equation}
+</script>
+
+<p>Similarly,</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dL_i}{dw_{12}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta > 0) x_{i2} \\
+\frac{dL_i}{dw_{13}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta > 0) x_{i3} \\
+\vdots \\
+\frac{dL_i}{dw_{1D}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta > 0) x_{iD}
+\end{equation}
+</script>
+
+<p>Hence, </p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\begin{align*}
+\frac{dL_i}{dw_{j}} &= \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta > 0)
+  \begin{bmatrix}
+  x_{i1} \\
+  x_{i2} \\
+  \vdots \\
+  x_{iD}
+  \end{bmatrix}
+\\
+&= \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta > 0) x_i \tag{2}
+\end{align*}
+ %]]></script>
+
+<p>For a special case where <script type="math/tex">j=y_i</script>,</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dL_i}{dw_{y_{i1}}} = -(\ldots) x_{i1}
+\end{equation}
+</script>
+
+<p>The coefficent of <script type="math/tex">x_{i1}</script> is the number of classes that meet the desire margin. Mathematically speaking, <script type="math/tex">\sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta > 0)</script>. Hence,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\begin{align*}
+\frac{dL_i}{dw_{y_i}} &= - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta > 0)
+  \begin{bmatrix}
+  x_{i1} \\
+  x_{i2} \\
+  \vdots \\
+  x_{iD}
+  \end{bmatrix}
+\\
+&= - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta > 0) x_i \tag{3}
+\end{align*}
+ %]]></script>
+
+<p>Equipped with equations (1), (2) and (3), we have enough information to implement a loss function and gradient update.</p>
+
+<p>The IPython Notebook <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip">svm.ipynb</a> from <a href="http://vision.stanford.edu/teaching/cs231n/syllabus.html">Stanford CS231n</a> is a great starting point to understand implementation of the SVM classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update.</p>
+
+<h6 id="non-vectorized-implementation">Non-vectorized implementation</h6>
+
+<p>Looking at the terms in equation (1) suggests us to compute scores of all classes with <script type="math/tex">x_iW</script>, given an example <script type="math/tex">x_i</script>. The loss function can be implemented with two for-loops. The inner loop collects loss of all classes of a single example and the outer loop collects it across all examples.</p>
+
+<p>We compute analytic gradient
+<script type="math/tex">% <![CDATA[
+
+\nabla_{w} L_i 
+  =
+  \begin{bmatrix}
+    \frac{dL_i}{dw_1} & \frac{dL_i}{dw_2} & \cdots & \frac{dL_i}{dw_C} 
+  \end{bmatrix}
+ %]]></script>
+one element at a time in the inner loop. Considering equation (2), we compute the gradient w.r.t. weights of class <script type="math/tex">j</script> with <code>dW[:,j] += X[i,:]</code>. Note that we use <code>+=</code> here as we have to collect the gradient across all classes <script type="math/tex">j</script> and across all examples. Considering equation (3), we compute the gradient of class $y_i$ with <code>dW[:,y[i]] -= X[i,:]</code>. Unlike the previous case, this single class <script type="math/tex">y_i</script> requires us to count the number of classes that satisfy the margin condition; hence, the use of <code>-=</code>.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">svm_loss_naive</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Structured SVM loss function, naive implementation (with loops).</span>
+
+<span class="sd">  Inputs have dimension D, there are C classes, and we operate on minibatches</span>
+<span class="sd">  of N examples.</span>
+
+<span class="sd">  Inputs:</span>
+<span class="sd">  - W: A numpy array of shape (D, C) containing weights.</span>
+<span class="sd">  - X: A numpy array of shape (N, D) containing a minibatch of data.</span>
+<span class="sd">  - y: A numpy array of shape (N,) containing training labels; y[i] = c means</span>
+<span class="sd">    that X[i] has label c, where 0 &lt;= c &lt; C.</span>
+<span class="sd">  - reg: (float) regularization strength</span>
+
+<span class="sd">  Returns a tuple of:</span>
+<span class="sd">  - loss as single float</span>
+<span class="sd">  - gradient with respect to weights W; an array of same shape as W</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c"># initialize the gradient as zero</span>
+  
+  <span class="c"># compute the loss and the gradient</span>
+  <span class="n">num_classes</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+  <span class="n">num_train</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_train</span><span class="p">):</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+    <span class="n">correct_class_score</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_classes</span><span class="p">):</span>
+      <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+        <span class="k">continue</span>
+      <span class="n">margin</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">correct_class_score</span> <span class="o">+</span> <span class="mi">1</span> 
+      <span class="k">if</span> <span class="n">margin</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">loss</span> <span class="o">+=</span> <span class="n">margin</span>
+        <span class="n">dW</span><span class="p">[:,</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">-=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> 
+        <span class="n">dW</span><span class="p">[:,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> 
+
+  <span class="c"># Averaging over all examples</span>
+  <span class="n">loss</span> <span class="o">/=</span> <span class="n">num_train</span>
+  <span class="n">dW</span> <span class="o">/=</span> <span class="n">num_train</span>
+
+  <span class="c"># Add regularization</span>
+  <span class="n">loss</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">W</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
+  <span class="n">dW</span> <span class="o">+=</span> <span class="n">reg</span><span class="o">*</span><span class="n">W</span>
+  
+  <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">dW</span></code></pre></div>
+
+<center><em><sup>cs231n/classifiers/linear_svm.py</sup></em></center>
+
+<hr />
+
+<h6 id="vectorized-implementation">Vectorized implementation</h6>
+
+<p>Instead of computing scores for each example, <script type="math/tex">x_iW</script>, we can compute them all at once with full matrix multiplication, <script type="math/tex">XW</script>. To compute the loss, this score matrix has to be subtracted row-wise by scores of correct classes and then added with <script type="math/tex">\Delta</script>. Because the loss equation sums over all <script type="math/tex">j</script> except <script type="math/tex">y_i</script>, we have to set the <script type="math/tex">y_i</script> component to zero. The trick to select correct-class scores across all examples is to use an array indexing technique together with NumPy’s <code>arange</code>. The idea of computing loss is illustrated below.</p>
+
+<p><a href="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" target="_blank"><img src="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" alt="Illustration of computing loss with fully vectorized operations" /></a></p>
+
+<p>Computing gradient in fully vectorized form is more complicated, but, fortunately, intermediate result of loss computation can be reused. When we compute the loss, we produce a matrix, called <code>margins</code> (see the code below). This is almost exactly what we need to compute gradient in equation (2). The indicator function in (2) suggests us to “binarize” this matrix with <code>binary[margins &gt; 0] = 1</code>. According to equation (3), we need to update the binarized matrix by summing across each column with <code>row_sum = np.sum(binary, axis=1)</code>, taking the negative values, and assigning them to <script type="math/tex">y_i</script> components with <code>binary[np.arange(num_train), y] = -row_sum.T</code>. Finally, by looking at the last component of both equations, we multiply the binarized matrix with <script type="math/tex">X^T</script>. (The gradient matrix is of shape DxC; the only way to produce this is <script type="math/tex">X^T binary</script>) </p>
+
+<p>Below is how vectorized computation flows. </p>
+
+<p><a href="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" target="_blank"><img src="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" alt="Illustration of computing gradient of SVM loss with fully vectorized operations" /></a></p>
+
+<p>For those who are still unconvinced, see alternative explanation below.</p>
+
+<p><a href="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" target="_blank"><img src="http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" alt="Step-by-step explanation" /></a></p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">svm_loss_vectorized</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Structured SVM loss function, vectorized implementation.</span>
+
+<span class="sd">  Inputs and outputs are the same as svm_loss_naive.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c"># initialize the gradient as zero</span>
+  <span class="n">num_train</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+  <span class="c">#############################################################################</span>
+  <span class="c"># Implement a vectorized version of the structured SVM loss, storing the    #</span>
+  <span class="c"># result in loss.                                                           #</span>
+  <span class="c">#############################################################################</span>
+  <span class="n">scores</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+  <span class="n">yi_scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">y</span><span class="p">]</span> <span class="c"># http://stackoverflow.com/a/23435843/459241 </span>
+  <span class="n">margins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">scores</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">yi_scores</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">margins</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_train</span><span class="p">),</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">margins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+  <span class="n">loss</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">W</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
+
+  <span class="c">#############################################################################</span>
+  <span class="c"># Implement a vectorized version of the gradient for the structured SVM     #</span>
+  <span class="c"># loss, storing the result in dW.                                           #</span>
+  <span class="c">#                                                                           #</span>
+  <span class="c"># Hint: Instead of computing the gradient from scratch, it may be easier    #</span>
+  <span class="c"># to reuse some of the intermediate values that you used to compute the     #</span>
+  <span class="c"># loss.                                                                     #</span>
+  <span class="c">#############################################################################</span>
+  <span class="n">binary</span> <span class="o">=</span> <span class="n">margins</span>
+  <span class="n">binary</span><span class="p">[</span><span class="n">margins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="n">row_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">binary</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_train</span><span class="p">),</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">row_sum</span><span class="o">.</span><span class="n">T</span>
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">binary</span><span class="p">)</span>
+
+  <span class="c"># Average</span>
+  <span class="n">dW</span> <span class="o">/=</span> <span class="n">num_train</span>
+
+  <span class="c"># Regularize</span>
+  <span class="n">dW</span> <span class="o">+=</span> <span class="n">reg</span><span class="o">*</span><span class="n">W</span>
+
+  <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">dW</span></code></pre></div>
+
+<center><em><sup>cs231n/classifiers/linear_svm.py</sup></em></center>
+
+<hr />
+
+<h6 id="further-reading">Further Reading</h6>
+<ul>
+  <li><a href="http://cs231n.github.io/linear-classify/">http://cs231n.github.io/linear-classify/</a></li>
+  <li><a href="http://cs231n.github.io/optimization-1/">http://cs231n.github.io/optimization-1/</a></li>
+  <li><a href="http://cs231n.github.io/assignments2016/assignment1/">http://cs231n.github.io/assignments2016/assignment1/</a></li>
+</ul>
+
+<script type="text/javascript" async="" src="//cdn.mathjax.org/mathjax/latest/MathJax.js">
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] },
+    menuSettings: { zoom: "Click" }
+  });
+</script>
+
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-twitter" href="http://twitter.com/share?text=Vectorized+implementation+of+SVM+loss+and+gradient+update&amp;url=http://127.0.0.1:4000/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update"
+                  onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+                <i class="fa fa-twitter"></i><span class="hidden">twitter</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4>Nimit Pattanasri</h4>
+              <p class="bio"></p>
+              <hr>
+              <p class="published">Published <time datetime="2017-01-06 00:00">06 Jan 2017</time></p>
+            </section>
+          </div>
+          
+          <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>              
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2017<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
+              </div>
+            </footer>
+          </div>
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cover-opt.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">ML x AI</h1>
+        <h2 class="blog-description">Notes for my journey in machine learning and artificial intelligence
+</h2>
+        <a href=/ class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+<!--
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
+<script>
+  $("script[type='math/tex']").replaceWith(function() {
+      var tex = $(this).text();
+      return katex.renderToString(tex, {displayMode: false});
+  });
+
+  $("script[type='math/tex; mode=display']").replaceWith(function() {
+      var tex = $(this).html();
+      return katex.renderToString(tex.replace(/%.*/g, ''), {displayMode: true});
+  });
+</script>
+-->
+
+  </body>
+</html>
