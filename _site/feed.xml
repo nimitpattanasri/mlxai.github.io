@@ -4,10 +4,10 @@
     <title>ML x AI</title>
     <description>Notes for my journey in machine learning and artificial intelligence
 </description>
-    <link>http://127.0.0.1:4000/</link>
-    <atom:link href="http://127.0.0.1:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 08 Jan 2017 18:58:37 +0700</pubDate>
-    <lastBuildDate>Sun, 08 Jan 2017 18:58:37 +0700</lastBuildDate>
+    <link>https://nimitpattanasri.github.io/</link>
+    <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 08 Jan 2017 20:00:33 +0700</pubDate>
+    <lastBuildDate>Sun, 08 Jan 2017 20:00:33 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -212,17 +212,17 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 &lt;p&gt;Instead of computing scores for each example, &lt;script type=&quot;math/tex&quot;&gt;x_iW&lt;/script&gt;, we can compute them all at once with full matrix multiplication, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt;. To compute the loss, this score matrix has to be subtracted row-wise by scores of correct classes and then added with &lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt;. Because the loss equation sums over all &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt;, we have to set the &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; component to zero. The trick to select correct-class scores across all examples is to use an array indexing technique together with NumPy’s &lt;code&gt;arange&lt;/code&gt;. The idea of computing loss is illustrated below.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; alt=&quot;Illustration of computing loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; alt=&quot;Illustration of computing loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Computing gradient in fully vectorized form is more complicated, but, fortunately, intermediate result of loss computation can be reused. When we compute the loss, we produce a matrix, called &lt;code&gt;margins&lt;/code&gt; (see the code below). This is almost exactly what we need to compute gradient in equation (2). The indicator function in (2) suggests us to “binarize” this matrix with &lt;code&gt;binary[margins &amp;gt; 0] = 1&lt;/code&gt;. According to equation (3), we need to update the binarized matrix by summing across each column with &lt;code&gt;row_sum = np.sum(binary, axis=1)&lt;/code&gt;, taking the negative values, and assigning them to &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; components with &lt;code&gt;binary[np.arange(num_train), y] = -row_sum.T&lt;/code&gt;. Finally, by looking at the last component of both equations, we multiply the binarized matrix with &lt;script type=&quot;math/tex&quot;&gt;X^T&lt;/script&gt;. (The gradient matrix is of shape DxC; the only way to produce this is &lt;script type=&quot;math/tex&quot;&gt;X^T binary&lt;/script&gt;) &lt;/p&gt;
 
 &lt;p&gt;Below is how vectorized computation flows. &lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; alt=&quot;Illustration of computing gradient of SVM loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; alt=&quot;Illustration of computing gradient of SVM loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;For those who are still unconvinced, see alternative explanation below.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; alt=&quot;Step-by-step explanation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; alt=&quot;Step-by-step explanation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;svm_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
   &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
@@ -297,8 +297,8 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 </description>
         <pubDate>Fri, 06 Jan 2017 00:00:00 +0700</pubDate>
-        <link>http://127.0.0.1:4000/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html</link>
-        <guid isPermaLink="true">http://127.0.0.1:4000/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html</guid>
+        <link>https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html</link>
+        <guid isPermaLink="true">https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html</guid>
         
         
       </item>
@@ -367,9 +367,9 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 &lt;p&gt;The exercise instead gives a hint of how to vectorize these operations efficiently with one matrix multiplication and two broadcast sums. The trick is to use a quadratic form.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; alt=&quot;A quadratic form with some rearrangement suggesting two broadcast sums and one matrix multiplication&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/1.jpg&quot; alt=&quot;A quadratic form with some rearrangement suggesting two broadcast sums and one matrix multiplication&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;http://127.0.0.1:4000/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; alt=&quot;An illustration of fully vectorized implementation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://nimitpattanasri.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; alt=&quot;An illustration of fully vectorized implementation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_no_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
     &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
@@ -409,8 +409,8 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 &lt;/ul&gt;
 </description>
         <pubDate>Tue, 03 Jan 2017 00:00:00 +0700</pubDate>
-        <link>http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html</link>
-        <guid isPermaLink="true">http://127.0.0.1:4000/2017/01/03/finding-distances-between-data-points-with-numpy.html</guid>
+        <link>https://nimitpattanasri.github.io/2017/01/03/finding-distances-between-data-points-with-numpy.html</link>
+        <guid isPermaLink="true">https://nimitpattanasri.github.io/2017/01/03/finding-distances-between-data-points-with-numpy.html</guid>
         
         
       </item>
