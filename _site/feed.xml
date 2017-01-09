@@ -6,9 +6,144 @@
 </description>
     <link>https://nimitpattanasri.github.io/</link>
     <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 09 Jan 2017 08:58:50 +0700</pubDate>
-    <lastBuildDate>Mon, 09 Jan 2017 08:58:50 +0700</lastBuildDate>
+    <pubDate>Mon, 09 Jan 2017 21:58:52 +0700</pubDate>
+    <lastBuildDate>Mon, 09 Jan 2017 21:58:52 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Implementing a Softmax classifier with vectorized operations</title>
+        <description>&lt;p&gt;Implementing a Softmax classifier is almost similar to &lt;a href=&quot;https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html&quot;&gt;SVM one&lt;/a&gt;, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+
+\begin{align*}
+L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\ 
+&amp;= -f_{y_i} + \log\sum_j e^{f_j} \tag{1} \\
+\end{align*}
+ %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where &lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;f_j(z) = \frac{e^{z_j}}{\sum_k e^{z_k}}&lt;/script&gt; is a Softmax function,&lt;/li&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;L_i&lt;/script&gt; is loss for classifying a single example &lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt;,&lt;/li&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; is the index of the correct class of &lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt;, and&lt;/li&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;f_j&lt;/script&gt; is the score for predicting class &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt;, computed by &lt;script type=&quot;math/tex&quot;&gt;x_iw_j&lt;/script&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Equation (1) makes sense as the loss will be minimum when score of predicting the correct class (&lt;script type=&quot;math/tex&quot;&gt;f_{y_i}&lt;/script&gt;) is maximized and accumulated scores for predicting other classess (&lt;script type=&quot;math/tex&quot;&gt;f_j&lt;/script&gt;) is minimized.&lt;/p&gt;
+
+&lt;p&gt;It is not difficult to derive analytic gradient of this loss function as follows:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{align*}
+\frac{dL_i}{dw_j} = \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i \tag{2}
+\end{align*}
+&lt;/script&gt;
+
+&lt;p&gt;and&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{align*}
+\frac{dL_i}{dw_{y_i}} = ( \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} - 1 ) x_i \tag{3}
+\end{align*}
+&lt;/script&gt;
+
+&lt;h6 id=&quot;vectorized-computation-of-loss-function&quot;&gt;Vectorized computation of loss function&lt;/h6&gt;
+
+&lt;p&gt;The term &lt;script type=&quot;math/tex&quot;&gt;f_j = x_iw_j&lt;/script&gt; in equation (1) suggests us to vectorize computation with a matrix multiplication, &lt;script type=&quot;math/tex&quot;&gt;f = XW&lt;/script&gt;. To avoid &lt;a href=&quot;http://cs231n.github.io/linear-classify/#softmax&quot;&gt;numerical stability&lt;/a&gt;, we have to update the scores matrix with &lt;script type=&quot;math/tex&quot;&gt;-\max f_j&lt;/script&gt;.&lt;/p&gt;
+
+&lt;h6 id=&quot;vectorized-computation-of-gradient&quot;&gt;Vectorized computation of gradient&lt;/h6&gt;
+
+&lt;p&gt;Looking at the terms &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}&lt;/script&gt; in equations (2) and (3), we can vectorize computation by multiplying &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, as in the case of loss computation. To get the term &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt; has to multiply with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; &lt;em&gt;somehow&lt;/em&gt;. Keep in mind that the gradient matrix &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; shares the shape with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, that is, &lt;script type=&quot;math/tex&quot;&gt;D\times C&lt;/script&gt;. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; of shape &lt;script type=&quot;math/tex&quot;&gt;D \times C&lt;/script&gt; is &lt;script type=&quot;math/tex&quot;&gt;\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;The IPython Notebook &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip&quot;&gt;softmax.ipynb&lt;/a&gt; from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;softmax_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Softmax loss function, vectorized version.&lt;/span&gt;
+
+&lt;span class=&quot;sd&quot;&gt;  Inputs have dimension D, there are C classes, and we operate on minibatches&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  of N examples.&lt;/span&gt;
+
+&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - W: A numpy array of shape (D, C) containing weights.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - X: A numpy array of shape (N, D) containing a minibatch of data.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - y: A numpy array of shape (N,) containing training labels; y[i] = c means&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - reg: (float) regularization strength&lt;/span&gt;
+
+&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - loss as single float&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - gradient with respect to weights W; an array of same shape as W&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Initialize the loss and gradient to zero.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros_like&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# TODO: Compute the softmax loss and its gradient using no explicit loops.  #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Store the loss in loss and the gradient in dW. If you are not careful     #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# here, it is easy to run into numeric instability. Don&amp;#39;t forget the        #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# regularization!                                                           #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
+    
+  &lt;span class=&quot;n&quot;&gt;term1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;term2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;term1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;term2&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  
+  &lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#                          END OF YOUR CODE                                 #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/softmax.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h6 id=&quot;further-reading&quot;&gt;Further Reading&lt;/h6&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cs231n.github.io/linear-classify/#softmax&quot;&gt;http://cs231n.github.io/linear-classify/#softmax&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;//cdn.mathjax.org/mathjax/latest/MathJax.js&quot;&gt;
+&lt;/script&gt;
+
+&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+  MathJax.Hub.Config({
+    extensions: [&quot;tex2jax.js&quot;],
+    jax: [&quot;input/TeX&quot;, &quot;output/HTML-CSS&quot;],
+    tex2jax: {
+      inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ],
+      processEscapes: true
+    },
+    &quot;HTML-CSS&quot;: { availableFonts: [&quot;TeX&quot;] },
+    menuSettings: { zoom: &quot;Click&quot; }
+  });
+&lt;/script&gt;
+
+</description>
+        <pubDate>Mon, 09 Jan 2017 00:00:00 +0700</pubDate>
+        <link>https://nimitpattanasri.github.io/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html</link>
+        <guid isPermaLink="true">https://nimitpattanasri.github.io/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Vectorized implementation of SVM loss and gradient update</title>
@@ -18,7 +153,7 @@
 
 &lt;p&gt;Quality of weights is often expressed by a loss function, our unhappiness with classification result, and we want its value to be as small as possible. To minimize the loss, we have to define a loss function and find their partial derivatives with respect to the weights to update them iteratively.&lt;/p&gt;
 
-&lt;p&gt;SVM loss function can be defined as:&lt;/p&gt;
+&lt;p&gt;SVM loss (a.k.a. hinge loss) function can be defined as:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;
 \begin{equation}

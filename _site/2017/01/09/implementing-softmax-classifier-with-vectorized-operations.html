@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <!-- (1) Optimize for mobile versions: http://goo.gl/EOpFl -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- (1) force latest IE rendering engine: bit.ly/1c8EiC9 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Implementing a Softmax classifier with vectorized operations</title>
+  <meta name="description" content="Implementing a Softmax classifier is almost similar to SVM one, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:" />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@nimitpattanasri" />
+    <meta name="twitter:title" content="Implementing a Softmax classifier with vectorized operations" />
+    <meta name="twitter:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
+    
+    <meta name="twitter:description"  content="Implementing a Softmax classifier is almost similar to SVM one, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:" />
+    
+  
+  
+  <meta property="og:site_name" content="ML x AI" />
+  <meta property="og:title" content="Implementing a Softmax classifier with vectorized operations"/>
+  
+  <meta property="og:description" content="Implementing a Softmax classifier is almost similar to SVM one, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:" />
+  
+  <meta property="og:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
+  <meta property="og:url" content="https://nimitpattanasri.github.io/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html" >
+  <meta property="og:type" content="blog" />
+  <meta property="article:published_time" content="2017-01-09T00:00:00+07:00">
+
+  <link rel="canonical" href="https://nimitpattanasri.github.io/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html"/>
+  <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
+  <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/css/print.css" />
+</head>
+
+  <body itemscope itemtype="http://schema.org/Article">
+    <!-- header start -->
+
+
+<!-- header end -->
+
+    <main class="content" role="main">
+      <article class="post">
+        
+        <div class="noarticleimage">
+          <div class="post-meta">
+            <h1 class="post-title">Implementing a Softmax classifier with vectorized operations</h1>
+            <div class="cf post-meta-text">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person"></h4>
+              on
+              <time datetime="2017-01-09T00:00:00+07:00">09 Jan 2017</time>
+              <!-- , tagged on <span class="post-tag-">, <a href="/tag/"></a></span> -->
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        
+        <section class="post-content">
+          <div class="post-reading">
+            <span class="post-reading-time"></span> read
+          </div>
+          <a name="topofpage"></a>
+          <p>Implementing a Softmax classifier is almost similar to <a href="https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html">SVM one</a>, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\begin{align*}
+L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\ 
+&= -f_{y_i} + \log\sum_j e^{f_j} \tag{1} \\
+\end{align*}
+ %]]></script>
+
+<p>where </p>
+
+<ul>
+  <li><script type="math/tex">f_j(z) = \frac{e^{z_j}}{\sum_k e^{z_k}}</script> is a Softmax function,</li>
+  <li><script type="math/tex">L_i</script> is loss for classifying a single example <script type="math/tex">x_i</script>,</li>
+  <li><script type="math/tex">y_i</script> is the index of the correct class of <script type="math/tex">x_i</script>, and</li>
+  <li><script type="math/tex">f_j</script> is the score for predicting class <script type="math/tex">j</script>, computed by <script type="math/tex">x_iw_j</script></li>
+</ul>
+
+<p>Equation (1) makes sense as the loss will be minimum when score of predicting the correct class (<script type="math/tex">f_{y_i}</script>) is maximized and accumulated scores for predicting other classess (<script type="math/tex">f_j</script>) is minimized.</p>
+
+<p>It is not difficult to derive analytic gradient of this loss function as follows:</p>
+
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{dL_i}{dw_j} = \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i \tag{2}
+\end{align*}
+</script>
+
+<p>and</p>
+
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{dL_i}{dw_{y_i}} = ( \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} - 1 ) x_i \tag{3}
+\end{align*}
+</script>
+
+<h6 id="vectorized-computation-of-loss-function">Vectorized computation of loss function</h6>
+
+<p>The term <script type="math/tex">f_j = x_iw_j</script> in equation (1) suggests us to vectorize computation with a matrix multiplication, <script type="math/tex">f = XW</script>. To avoid <a href="http://cs231n.github.io/linear-classify/#softmax">numerical stability</a>, we have to update the scores matrix with <script type="math/tex">-\max f_j</script>.</p>
+
+<h6 id="vectorized-computation-of-gradient">Vectorized computation of gradient</h6>
+
+<p>Looking at the terms <script type="math/tex">\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}</script> in equations (2) and (3), we can vectorize computation by multiplying <script type="math/tex">X</script> with <script type="math/tex">W</script>, as in the case of loss computation. To get the term <script type="math/tex">\frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i</script>, <script type="math/tex">XW</script> has to multiply with <script type="math/tex">X</script> <em>somehow</em>. Keep in mind that the gradient matrix <script type="math/tex">\frac{dL_i}{dW}</script> shares the shape with <script type="math/tex">W</script>, that is, <script type="math/tex">D\times C</script>. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce <script type="math/tex">\frac{dL_i}{dW}</script> of shape <script type="math/tex">D \times C</script> is <script type="math/tex">\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)</script>.</p>
+
+<p>The IPython Notebook <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip">softmax.ipynb</a> from <a href="http://vision.stanford.edu/teaching/cs231n/syllabus.html">Stanford CS231n</a> is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">softmax_loss_vectorized</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Softmax loss function, vectorized version.</span>
+
+<span class="sd">  Inputs have dimension D, there are C classes, and we operate on minibatches</span>
+<span class="sd">  of N examples.</span>
+
+<span class="sd">  Inputs:</span>
+<span class="sd">  - W: A numpy array of shape (D, C) containing weights.</span>
+<span class="sd">  - X: A numpy array of shape (N, D) containing a minibatch of data.</span>
+<span class="sd">  - y: A numpy array of shape (N,) containing training labels; y[i] = c means</span>
+<span class="sd">    that X[i] has label c, where 0 &lt;= c &lt; C.</span>
+<span class="sd">  - reg: (float) regularization strength</span>
+
+<span class="sd">  Returns a tuple of:</span>
+<span class="sd">  - loss as single float</span>
+<span class="sd">  - gradient with respect to weights W; an array of same shape as W</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="c"># Initialize the loss and gradient to zero.</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+
+  <span class="c">#############################################################################</span>
+  <span class="c"># TODO: Compute the softmax loss and its gradient using no explicit loops.  #</span>
+  <span class="c"># Store the loss in loss and the gradient in dW. If you are not careful     #</span>
+  <span class="c"># here, it is easy to run into numeric instability. Don&#39;t forget the        #</span>
+  <span class="c"># regularization!                                                           #</span>
+  <span class="c">#############################################################################</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="n">C</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+  <span class="n">f</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
+  <span class="n">f</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    
+  <span class="n">term1</span> <span class="o">=</span> <span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">y</span><span class="p">]</span>
+  <span class="n">sum_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sum_j</span><span class="p">)</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="n">term1</span> <span class="o">+</span> <span class="n">term2</span>
+  <span class="n">loss</span> <span class="o">/=</span> <span class="n">N</span> 
+  <span class="n">loss</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">W</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
+  
+  <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sum_j</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+  <span class="n">coef</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">),</span><span class="n">y</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+  <span class="n">dW</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+  <span class="n">dW</span> <span class="o">/=</span> <span class="n">N</span>
+  <span class="n">dW</span> <span class="o">+=</span> <span class="n">reg</span><span class="o">*</span><span class="n">W</span>
+  <span class="c">#############################################################################</span>
+  <span class="c">#                          END OF YOUR CODE                                 #</span>
+  <span class="c">#############################################################################</span>
+
+  <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">dW</span></code></pre></div>
+
+<center><em><sup>cs231n/classifiers/softmax.py</sup></em></center>
+
+<p><br /></p>
+
+<h6 id="further-reading">Further Reading</h6>
+<ul>
+  <li><a href="http://cs231n.github.io/linear-classify/#softmax">http://cs231n.github.io/linear-classify/#softmax</a></li>
+</ul>
+
+<script type="text/javascript" async="" src="//cdn.mathjax.org/mathjax/latest/MathJax.js">
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { availableFonts: ["TeX"] },
+    menuSettings: { zoom: "Click" }
+  });
+</script>
+
+
+        </section>
+        <footer class="post-footer">
+          <section class="share">
+            
+              
+                <a class="icon-twitter" href="http://twitter.com/share?text=Implementing+a+Softmax+classifier+with+vectorized+operations&amp;url=https://nimitpattanasri.github.io/2017/01/09/implementing-softmax-classifier-with-vectorized-operations"
+                  onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+                <i class="fa fa-twitter"></i><span class="hidden">twitter</span>
+                </a>
+              
+            
+              
+            
+          </section>
+        </footer>
+        <div class="bottom-teaser cf">
+          <div class="isLeft">
+            <h5 class="index-headline featured"><span>Written by</span></h5>
+            <section class="author">
+              <div class="author-image" style="background-image: url(/assets/images/nimit-opt.jpg)">Blog Logo</div>
+              <h4>Nimit Pattanasri</h4>
+              <p class="bio"></p>
+              <hr>
+              <p class="published">Published <time datetime="2017-01-09 00:00">09 Jan 2017</time></p>
+            </section>
+          </div>
+          
+          <div class="isRight">
+            <h5 class="index-headline featured"><span>Supported by</span></h5>
+            <footer class="site-footer">
+              <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>              
+              <div class="inner">
+                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2017<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
+              </div>
+            </footer>
+          </div>
+        </div>
+        
+      </article>
+    </main>
+    <div class="bottom-closer">
+      <div class="background-closer-image"  style="background-image: url(/assets/images/cover-opt.jpg)">
+        Image
+      </div>
+      <div class="inner">
+        <h1 class="blog-title">ML x AI</h1>
+        <h2 class="blog-description">Notes for my journey in machine learning and artificial intelligence
+</h2>
+        <a href=/ class="btn">Back to Overview</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/assets/js/index.js"></script>
+<script type="text/javascript" src="/assets/js/readingTime.min.js"></script>
+<script>
+(function ($) {
+  "use strict";
+  $(document).ready(function(){
+
+    var $window = $(window),
+    $image = $('.post-image-image, .teaserimage-image');
+    
+      $window.on('scroll', function() {
+        var top = $window.scrollTop();
+
+        if (top < 0 || top > 1500) { return; }
+        $image
+          .css('transform', 'translate3d(0px, '+top/3+'px, 0px)')
+          .css('opacity', 1-Math.max(top/700, 0));
+      });
+      $window.trigger('scroll');
+
+      var height = $('.article-image').height();
+      $('.post-content').css('padding-top', height + 'px');
+
+      $('a[href*=#]:not([href=#])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
+         && location.hostname == this.hostname) {
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({ scrollTop: target.offset().top }, 500);
+            return false;
+          }
+        }
+      });
+
+  });
+}(jQuery));
+</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-6345302-31', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+<!--
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.js"></script>
+<script>
+  $("script[type='math/tex']").replaceWith(function() {
+      var tex = $(this).text();
+      return katex.renderToString(tex, {displayMode: false});
+  });
+
+  $("script[type='math/tex; mode=display']").replaceWith(function() {
+      var tex = $(this).html();
+      return katex.renderToString(tex.replace(/%.*/g, ''), {displayMode: true});
+  });
+</script>
+-->
+
+  </body>
+</html>

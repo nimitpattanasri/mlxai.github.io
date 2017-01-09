@@ -9,7 +9,7 @@ SVM multiclass classification computes scores, based on learnable weights, for e
 
 Quality of weights is often expressed by a loss function, our unhappiness with classification result, and we want its value to be as small as possible. To minimize the loss, we have to define a loss function and find their partial derivatives with respect to the weights to update them iteratively.
 
-SVM loss function can be defined as:
+SVM loss (a.k.a. hinge loss) function can be defined as:
 
 $$
 \begin{equation}
