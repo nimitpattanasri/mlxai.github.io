@@ -6,17 +6,17 @@
 </description>
     <link>https://nimitpattanasri.github.io/</link>
     <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 10 Jan 2017 21:56:03 +0700</pubDate>
-    <lastBuildDate>Tue, 10 Jan 2017 21:56:03 +0700</lastBuildDate>
+    <pubDate>Tue, 10 Jan 2017 22:14:34 +0700</pubDate>
+    <lastBuildDate>Tue, 10 Jan 2017 22:14:34 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
         <title>A Modular Approach to Implementing Fully-Connected Neural Networks</title>
         <description>&lt;p&gt;I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt; for the uninitiated.&lt;/p&gt;
 
-&lt;p&gt;To become a back-propagation ninja, I recommend succinct study materials from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; &lt;a href=&quot;http://cs231n.github.io/optimization-2/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://cs231n.github.io/neural-networks-case-study/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To become a backpropagation ninja, I recommend succinct study materials from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; &lt;a href=&quot;http://cs231n.github.io/optimization-2/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://cs231n.github.io/neural-networks-case-study/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;The materials will give you intuitive understanding about how to compute gradient with a back propagation technique. This technique uses a chain rule and enjoys considering only the output and its inputs of single neurons, avoiding analyzing gradient of a single monolithic function in one shot.&lt;/p&gt;
+&lt;p&gt;The materials will give you intuitive understanding about how to compute gradient with a backpropagation technique. This technique uses a chain rule and enjoys considering only the output and its inputs of single neurons, avoiding analyzing gradient of a single monolithic function in one shot.&lt;/p&gt;
 
 &lt;p&gt;The exercise &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment2.zip&quot;&gt;FullyConnectedNets.ipynb&lt;/a&gt; provided with the materials will introduce you to a modular layer design, and then use those layers to implement fully-connected networks of arbitrary depth.&lt;/p&gt;
 

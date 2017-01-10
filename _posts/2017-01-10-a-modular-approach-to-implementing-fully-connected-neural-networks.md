@@ -5,9 +5,9 @@ title: A Modular Approach to Implementing Fully-Connected Neural Networks
 
 I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression `db = np.sum(dout, axis=0)` for the uninitiated.
 
-To become a back-propagation ninja, I recommend succinct study materials from [Stanford CS231n](http://vision.stanford.edu/teaching/cs231n/syllabus.html) [here](http://cs231n.github.io/optimization-2/) and [here](http://cs231n.github.io/neural-networks-case-study/).
+To become a backpropagation ninja, I recommend succinct study materials from [Stanford CS231n](http://vision.stanford.edu/teaching/cs231n/syllabus.html) [here](http://cs231n.github.io/optimization-2/) and [here](http://cs231n.github.io/neural-networks-case-study/).
 
-The materials will give you intuitive understanding about how to compute gradient with a back propagation technique. This technique uses a chain rule and enjoys considering only the output and its inputs of single neurons, avoiding analyzing gradient of a single monolithic function in one shot.
+The materials will give you intuitive understanding about how to compute gradient with a backpropagation technique. This technique uses a chain rule and enjoys considering only the output and its inputs of single neurons, avoiding analyzing gradient of a single monolithic function in one shot.
 
 The exercise [FullyConnectedNets.ipynb](http://vision.stanford.edu/teaching/cs231n/winter1516_assignment2.zip) provided with the materials will introduce you to a modular layer design, and then use those layers to implement fully-connected networks of arbitrary depth.
 
