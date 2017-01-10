@@ -101,7 +101,22 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
           <div class="article-item">
             <header class="post-header">
-              <h2 class="post-title" itemprop="name"><a href="/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html" itemprop="url">Implementing a Softmax classifier with vectorized operations</a></h2>
+              <h2 class="post-title" itemprop="name"><a href="/2017/01/10/a-modular-approach-to-implementing-fully-connected-neural-networks.html" itemprop="url">A Modular Approach to Implementing Fully-Connected Neural Networks</a></h2>
+            </header>
+            <section class="post-excerpt" itemprop="description">
+              <p>I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression db = np.sum(dout, axis=0) for the uninitiated....</p>
+            </section>
+            <div class="post-meta">
+              <time datetime="10 January 2017">10 January 2017</time>
+<!--            <span class="post-tags-set">on <span class="post-tag-">, <a href="/tag/"></a></span></span>-->
+            </div>
+          </div>
+        </article>
+      
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
+          <div class="article-item">
+            <header class="post-header">
+              <h2 class="post-title" itemprop="name"><a href="/2017/01/09/implementing-softmax-classifier-with-vectorized-operations.html" itemprop="url">Implementing a Softmax Classifier with Vectorized Operations</a></h2>
             </header>
             <section class="post-excerpt" itemprop="description">
               <p>Implementing a Softmax classifier is almost similar to SVM one, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:
@@ -118,7 +133,7 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
           <div class="article-item">
             <header class="post-header">
-              <h2 class="post-title" itemprop="name"><a href="/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" itemprop="url">Vectorized implementation of SVM loss and gradient update</a></h2>
+              <h2 class="post-title" itemprop="name"><a href="/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" itemprop="url">Vectorized Implementation of SVM Loss and Gradient Update</a></h2>
             </header>
             <section class="post-excerpt" itemprop="description">
               <p>SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights.
@@ -135,7 +150,7 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
           <div class="article-item">
             <header class="post-header">
-              <h2 class="post-title" itemprop="name"><a href="/2017/01/03/finding-distances-between-data-points-with-numpy.html" itemprop="url">Finding distances between data points with NumPy</a></h2>
+              <h2 class="post-title" itemprop="name"><a href="/2017/01/03/finding-distances-between-data-points-with-numpy.html" itemprop="url">Finding Distances Between Data Points with NumPy</a></h2>
             </header>
             <section class="post-excerpt" itemprop="description">
               <p>Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook knn.ipynb from Stanford CS231n will walk us through implementing the kNN classifier for classifying images data.

@@ -6,12 +6,170 @@
 </description>
     <link>https://nimitpattanasri.github.io/</link>
     <atom:link href="https://nimitpattanasri.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 09 Jan 2017 21:58:52 +0700</pubDate>
-    <lastBuildDate>Mon, 09 Jan 2017 21:58:52 +0700</lastBuildDate>
+    <pubDate>Tue, 10 Jan 2017 21:56:03 +0700</pubDate>
+    <lastBuildDate>Tue, 10 Jan 2017 21:56:03 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
-        <title>Implementing a Softmax classifier with vectorized operations</title>
+        <title>A Modular Approach to Implementing Fully-Connected Neural Networks</title>
+        <description>&lt;p&gt;I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt; for the uninitiated.&lt;/p&gt;
+
+&lt;p&gt;To become a back-propagation ninja, I recommend succinct study materials from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; &lt;a href=&quot;http://cs231n.github.io/optimization-2/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://cs231n.github.io/neural-networks-case-study/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The materials will give you intuitive understanding about how to compute gradient with a back propagation technique. This technique uses a chain rule and enjoys considering only the output and its inputs of single neurons, avoiding analyzing gradient of a single monolithic function in one shot.&lt;/p&gt;
+
+&lt;p&gt;The exercise &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment2.zip&quot;&gt;FullyConnectedNets.ipynb&lt;/a&gt; provided with the materials will introduce you to a modular layer design, and then use those layers to implement fully-connected networks of arbitrary depth.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;… For each layer we will implement a &lt;code&gt;forward&lt;/code&gt; and a &lt;code&gt;backward&lt;/code&gt; function. The &lt;code&gt;forward&lt;/code&gt; function will receive inputs, weights, and other parameters and will return both an output and a &lt;code&gt;cache&lt;/code&gt; object storing data needed for the backward pass, like this:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot; Receive inputs x and weights w &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Do some computations ...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# ... some intermediate value&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Do some more computations ...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# the output&lt;/span&gt;
+   
+  &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Values we need to compute gradients&lt;/span&gt;
+   
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The backward pass will receive upstream derivatives and the &lt;code&gt;cache&lt;/code&gt; object, and will return gradients with respect to the inputs and weights, like this:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Receive derivative of loss with respect to outputs and cache,&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  and compute derivative with respect to inputs.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Unpack cache values&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
+  
+  &lt;span class=&quot;c&quot;&gt;# Use values in cache to compute derivatives&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Derivative of loss with respect to x&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Derivative of loss with respect to w&lt;/span&gt;
+  
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;After implementing a bunch of layers this way, we will be able to easily combine them to build classifiers with different architectures.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Below is a sample implementation of &lt;code&gt;layer_forward&lt;/code&gt; and &lt;code&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Computes the forward pass for an affine (fully-connected) layer.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  examples, where each example x[i] has shape (d_1, ..., d_k). We will&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  reshape each input into a vector of dimension D = d_1 * ... * d_k, and&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  then transform it to an output vector of dimension M.&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - w: A numpy array of weights, of shape (D, M)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - b: A numpy array of biases, of shape (M,)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  &lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - out: output, of shape (N, M)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - cache: (x, w, b)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# TODO: Implement the affine forward pass. Store the result in out. You     #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# will need to reshape the input into rows.                                 #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#                             END OF YOUR CODE                              #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  Computes the backward pass for an affine layer.&lt;/span&gt;
+
+&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - dout: Upstream derivative, of shape (N, M)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - cache: Tuple of:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;    - x: Input data, of shape (N, d_1, ... d_k)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;    - w: Weights, of shape (D, M)&lt;/span&gt;
+
+&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - dw: Gradient with respect to w, of shape (D, M)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  - db: Gradient with respect to b, of shape (M,)&lt;/span&gt;
+&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# TODO: Implement the affine backward pass.                                 #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#                             END OF YOUR CODE                              #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It is not difficult to derive gradients &lt;code&gt;dx&lt;/code&gt; and &lt;code&gt;dw&lt;/code&gt; and implement them in Python. The gradient &lt;code&gt;db&lt;/code&gt;, however, requires careful thought. The expression &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt; is not easy to understand. &lt;/p&gt;
+
+&lt;p&gt;First, you need to understand what really happens inside this simple equation &lt;script type=&quot;math/tex&quot;&gt;out = xw + b&lt;/script&gt;. One way to understand this is by analyzing dimensions of the matrices. That is, &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(1 \times M)}b&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Do you notice incompatibility of &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt;’s dimension and &lt;script type=&quot;math/tex&quot;&gt;out&lt;/script&gt;’s? Think of it for a second and read on! &lt;/p&gt;
+
+&lt;p&gt;What happens in the expression is broadcast of &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;1 \times M&lt;/script&gt; to &lt;script type=&quot;math/tex&quot;&gt;N \times M&lt;/script&gt;. Intuitively, there is only one set of bias of size &lt;script type=&quot;math/tex&quot;&gt;M&lt;/script&gt; which shares across all examples &lt;script type=&quot;math/tex&quot;&gt;x&lt;/script&gt;. In fact, there is an &lt;em&gt;invisible input&lt;/em&gt; for the bias term. That is, &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b&lt;/script&gt; where &lt;script type=&quot;math/tex&quot;&gt;ix&lt;/script&gt; contains all 1’s and stays there just for the sake of facilitating later calculation. (As the term suggests, bias does not depend on the input.)&lt;/p&gt;
+
+&lt;p&gt;That’s it for &lt;code&gt;layer_forward&lt;/code&gt;. Now, let’s proceed to &lt;code&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Considering &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b&lt;/script&gt;, we can derive &lt;script type=&quot;math/tex&quot;&gt;db&lt;/script&gt; (in short, for &lt;script type=&quot;math/tex&quot;&gt;\frac{dLoss}{db}&lt;/script&gt;) using a chain rule with &lt;script type=&quot;math/tex&quot;&gt;\underset{(1 \times M)}{db} = \underset{(1 \times N)}{ix^\mathsf{T}} \underset{(N \times M)}{dout}&lt;/script&gt;. Recall that &lt;script type=&quot;math/tex&quot;&gt;ix&lt;/script&gt; is all 1’s; therefore, the expression just sums &lt;script type=&quot;math/tex&quot;&gt;dout&lt;/script&gt; along axis = 0, that is, &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Not really trivial, is it?&lt;/p&gt;
+
+&lt;h6 id=&quot;lessons-learned&quot;&gt;Lessons Learned&lt;/h6&gt;
+&lt;ul&gt;
+  &lt;li&gt;Understanding NumPy’s broadcast is a must.&lt;/li&gt;
+  &lt;li&gt;Analyzing dimensions of matrices might come in handy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h6 id=&quot;further-reading&quot;&gt;Further Reading&lt;/h6&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://scipy.github.io/old-wiki/pages/EricsBroadcastingDoc&quot;&gt;Array Broadcasting in NumPy&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cs231n.github.io/linear-classify/&quot;&gt;http://cs231n.github.io/linear-classify/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cs231n.github.io/optimization-2/&quot;&gt;http://cs231n.github.io/optimization-2/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cs231n.github.io/neural-networks-case-study/&quot;&gt;http://cs231n.github.io/neural-networks-case-study/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;//cdn.mathjax.org/mathjax/latest/MathJax.js&quot;&gt;
+&lt;/script&gt;
+
+&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+  MathJax.Hub.Config({
+    extensions: [&quot;tex2jax.js&quot;],
+    jax: [&quot;input/TeX&quot;, &quot;output/HTML-CSS&quot;],
+    tex2jax: {
+      inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ],
+      processEscapes: true
+    },
+    &quot;HTML-CSS&quot;: { availableFonts: [&quot;TeX&quot;] },
+    menuSettings: { zoom: &quot;Click&quot; }
+  });
+&lt;/script&gt;
+
+</description>
+        <pubDate>Tue, 10 Jan 2017 00:00:00 +0700</pubDate>
+        <link>https://nimitpattanasri.github.io/2017/01/10/a-modular-approach-to-implementing-fully-connected-neural-networks.html</link>
+        <guid isPermaLink="true">https://nimitpattanasri.github.io/2017/01/10/a-modular-approach-to-implementing-fully-connected-neural-networks.html</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Implementing a Softmax Classifier with Vectorized Operations</title>
         <description>&lt;p&gt;Implementing a Softmax classifier is almost similar to &lt;a href=&quot;https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html&quot;&gt;SVM one&lt;/a&gt;, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
@@ -146,7 +304,7 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
       </item>
     
       <item>
-        <title>Vectorized implementation of SVM loss and gradient update</title>
+        <title>Vectorized Implementation of SVM Loss and Gradient Update</title>
         <description>&lt;p&gt;SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights.&lt;/p&gt;
 
 &lt;h6 id=&quot;loss-function&quot;&gt;Loss function&lt;/h6&gt;
@@ -439,7 +597,7 @@ one element at a time in the inner loop. Considering equation (2), we compute th
       </item>
     
       <item>
-        <title>Finding distances between data points with NumPy</title>
+        <title>Finding Distances Between Data Points with NumPy</title>
         <description>&lt;p&gt;Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip&quot;&gt;knn.ipynb&lt;/a&gt; from Stanford CS231n will walk us through implementing the kNN classifier for classifying images data.&lt;/p&gt;
 
 &lt;blockquote&gt;

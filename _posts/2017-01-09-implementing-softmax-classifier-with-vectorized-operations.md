@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Implementing a Softmax classifier with vectorized operations
+title: Implementing a Softmax Classifier with Vectorized Operations
 ---
 
 Implementing a Softmax classifier is almost similar to [SVM one]({{ site.url }}/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html), except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:
