@@ -1,6 +1,7 @@
 ---
 layout: post
 title: A Modular Approach to Implementing Fully-Connected Neural Networks
+comments: true
 ---
 
 I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression `db = np.sum(dout, axis=0)` for the uninitiated.

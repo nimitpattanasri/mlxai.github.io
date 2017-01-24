@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Vectorized Implementation of SVM Loss and Gradient Update
+comments: true
 ---
 
 SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights.

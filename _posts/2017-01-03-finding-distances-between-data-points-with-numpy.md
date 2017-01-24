@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Finding Distances Between Data Points with NumPy
+comments: true
 ---
 
 Finding distances between training and test data is essential to a k-Nearest Neighbor (kNN) classifier. The IPython Notebook [knn.ipynb](http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip) from Stanford CS231n will walk us through implementing the kNN classifier for classifying images data.
