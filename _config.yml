@@ -22,7 +22,7 @@ author_image: "/assets/images/nimit-opt.jpg"
 
 paginate:	5
 
-url: "https://nimitpattanasri.github.io" # the base hostname & protocol for your site
+url: "https://mlxai.github.io" # the base hostname & protocol for your site
 baseurl: ""
 #used to display twitter cards
 twitter_handle: '@nimitpattanasri'
@@ -47,7 +47,7 @@ social:
 #    share_link: "&amp;u="
 
   - icon:	github
-    url:	https://github.com/nimitpattanasri
+    url:	https://github.com/mlxai
     desc:	Fork me on github
     share_url:
     share_title:

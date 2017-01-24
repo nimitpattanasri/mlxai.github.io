@@ -18,7 +18,7 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@nimitpattanasri" />
     <meta name="twitter:title" content="Vectorized Implementation of SVM Loss and Gradient Update" />
-    <meta name="twitter:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
+    <meta name="twitter:image" content="https://mlxai.github.io/assets/images/logo.jpg" />
     
     <meta name="twitter:description"  content="SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights." />
     
@@ -29,12 +29,12 @@
   
   <meta property="og:description" content="SVM multiclass classification computes scores, based on learnable weights, for each class and predicts one with the maximum score. Gradient descent is a common technique used to find optimal weights." />
   
-  <meta property="og:image" content="https://nimitpattanasri.github.io/assets/images/logo.jpg" />
-  <meta property="og:url" content="https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" >
+  <meta property="og:image" content="https://mlxai.github.io/assets/images/logo.jpg" />
+  <meta property="og:url" content="https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html" >
   <meta property="og:type" content="blog" />
   <meta property="article:published_time" content="2017-01-06T00:00:00+07:00">
 
-  <link rel="canonical" href="https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html"/>
+  <link rel="canonical" href="https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html"/>
   <link rel="shortcut icon" href="/assets/images/favicon.png" type="image/png"/>
   <link rel="stylesheet" href="//brick.a.ssl.fastly.net/Linux+Libertine:400,400i,700,700i/Open+Sans:400,400i,700,700i">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -273,17 +273,17 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 <p>Instead of computing scores for each example, <script type="math/tex">x_iW</script>, we can compute them all at once with full matrix multiplication, <script type="math/tex">XW</script>. To compute the loss, this score matrix has to be subtracted row-wise by scores of correct classes and then added with <script type="math/tex">\Delta</script>. Because the loss equation sums over all <script type="math/tex">j</script> except <script type="math/tex">y_i</script>, we have to set the <script type="math/tex">y_i</script> component to zero. The trick to select correct-class scores across all examples is to use an array indexing technique together with NumPy’s <code>arange</code>. The idea of computing loss is illustrated below.</p>
 
-<p><a href="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" target="_blank"><img src="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" alt="Illustration of computing loss with fully vectorized operations" /></a></p>
+<p><a href="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" target="_blank"><img src="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg" alt="Illustration of computing loss with fully vectorized operations" /></a></p>
 
 <p>Computing gradient in fully vectorized form is more complicated, but, fortunately, intermediate result of loss computation can be reused. When we compute the loss, we produce a matrix, called <code>margins</code> (see the code below). This is almost exactly what we need to compute gradient in equation (2). The indicator function in (2) suggests us to “binarize” this matrix with <code>binary[margins &gt; 0] = 1</code>. According to equation (3), we need to update the binarized matrix by summing across each column with <code>row_sum = np.sum(binary, axis=1)</code>, taking the negative values, and assigning them to <script type="math/tex">y_i</script> components with <code>binary[np.arange(num_train), y] = -row_sum.T</code>. Finally, by looking at the last component of both equations, we multiply the binarized matrix with <script type="math/tex">X^T</script>. (The gradient matrix is of shape DxC; the only way to produce this is <script type="math/tex">X^T binary</script>) </p>
 
 <p>Below is how vectorized computation flows. </p>
 
-<p><a href="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" target="_blank"><img src="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" alt="Illustration of computing gradient of SVM loss with fully vectorized operations" /></a></p>
+<p><a href="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" target="_blank"><img src="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg" alt="Illustration of computing gradient of SVM loss with fully vectorized operations" /></a></p>
 
 <p>For those who are still unconvinced, see alternative explanation below.</p>
 
-<p><a href="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" target="_blank"><img src="https://nimitpattanasri.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" alt="Step-by-step explanation" /></a></p>
+<p><a href="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" target="_blank"><img src="https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg" alt="Step-by-step explanation" /></a></p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">svm_loss_vectorized</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
   <span class="sd">&quot;&quot;&quot;</span>
@@ -362,7 +362,7 @@ one element at a time in the inner loop. Considering equation (2), we compute th
           <section class="share">
             
               
-                <a class="icon-twitter" href="http://twitter.com/share?text=Vectorized+Implementation+of+SVM+Loss+and+Gradient+Update&amp;url=https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update"
+                <a class="icon-twitter" href="http://twitter.com/share?text=Vectorized+Implementation+of+SVM+Loss+and+Gradient+Update&amp;url=https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update"
                   onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
                 <i class="fa fa-twitter"></i><span class="hidden">twitter</span>
                 </a>
@@ -398,7 +398,7 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 <div id="disqus_thread"></div>
 <script>
 var disqus_config = function () {
-this.page.url = "https://nimitpattanasri.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html"; // <--- use canonical URL
+this.page.url = "https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html"; // <--- use canonical URL
 this.page.identifier = "/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update";
 };
 (function() { // DON'T EDIT BELOW THIS LINE
