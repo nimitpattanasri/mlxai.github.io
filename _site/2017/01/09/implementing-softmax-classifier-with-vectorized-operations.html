@@ -98,7 +98,7 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 <script type="math/tex; mode=display">
 \begin{align*}
-\frac{dL_i}{dw_j} = \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i \tag{2}
+\frac{dL_i}{dw_j} = \frac{e^{f_{j}}}{\sum_j e^{f_j}} x_i \tag{2}
 \end{align*}
 </script>
 
@@ -116,7 +116,7 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 <h6 id="vectorized-computation-of-gradient">Vectorized computation of gradient</h6>
 
-<p>Looking at the terms <script type="math/tex">\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}</script> in equations (2) and (3), we can vectorize computation by multiplying <script type="math/tex">X</script> with <script type="math/tex">W</script>, as in the case of loss computation. To get the term <script type="math/tex">\frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i</script>, <script type="math/tex">XW</script> has to multiply with <script type="math/tex">X</script> <em>somehow</em>. Keep in mind that the gradient matrix <script type="math/tex">\frac{dL_i}{dW}</script> shares the shape with <script type="math/tex">W</script>, that is, <script type="math/tex">D\times C</script>. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce <script type="math/tex">\frac{dL_i}{dW}</script> of shape <script type="math/tex">D \times C</script> is <script type="math/tex">\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)</script>.</p>
+<p>Looking at the terms <script type="math/tex">\frac{e^{f}}{\sum_j e^{f_j}}</script> in equations (2) and (3), we can vectorize computation by multiplying <script type="math/tex">X</script> with <script type="math/tex">W</script>, as in the case of loss computation. To get the term <script type="math/tex">\frac{e^{f}}{\sum_j e^{f_j}} x_i</script>, <script type="math/tex">XW</script> has to multiply with <script type="math/tex">X</script> <em>somehow</em>. Keep in mind that the gradient matrix <script type="math/tex">\frac{dL_i}{dW}</script> shares the shape with <script type="math/tex">W</script>, that is, <script type="math/tex">D\times C</script>. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce <script type="math/tex">\frac{dL_i}{dW}</script> of shape <script type="math/tex">D \times C</script> is <script type="math/tex">\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)</script>.</p>
 
 <p>The IPython Notebook <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip">softmax.ipynb</a> from <a href="http://vision.stanford.edu/teaching/cs231n/syllabus.html">Stanford CS231n</a> is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.</p>
 

@@ -26,7 +26,7 @@ It is not difficult to derive analytic gradient of this loss function as follows
 
 $$
 \begin{align*}
-\frac{dL_i}{dw_j} = \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i \tag{2}
+\frac{dL_i}{dw_j} = \frac{e^{f_{j}}}{\sum_j e^{f_j}} x_i \tag{2}
 \end{align*}
 $$
 
@@ -44,7 +44,7 @@ The term $$f_j = x_iw_j$$ in equation (1) suggests us to vectorize computation w
 
 ###### Vectorized computation of gradient
 
-Looking at the terms $$\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}$$ in equations (2) and (3), we can vectorize computation by multiplying $$X$$ with $$W$$, as in the case of loss computation. To get the term $$\frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i$$, $$XW$$ has to multiply with $$X$$ *somehow*. Keep in mind that the gradient matrix $$\frac{dL_i}{dW}$$ shares the shape with $$W$$, that is, $$D\times C$$. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce $$\frac{dL_i}{dW}$$ of shape $$D \times C$$ is $$\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)$$.
+Looking at the terms $$\frac{e^{f}}{\sum_j e^{f_j}}$$ in equations (2) and (3), we can vectorize computation by multiplying $$X$$ with $$W$$, as in the case of loss computation. To get the term $$\frac{e^{f}}{\sum_j e^{f_j}} x_i$$, $$XW$$ has to multiply with $$X$$ *somehow*. Keep in mind that the gradient matrix $$\frac{dL_i}{dW}$$ shares the shape with $$W$$, that is, $$D\times C$$. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce $$\frac{dL_i}{dW}$$ of shape $$D \times C$$ is $$\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)$$.
 
 The IPython Notebook [softmax.ipynb](http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip) from [Stanford CS231n](http://vision.stanford.edu/teaching/cs231n/syllabus.html) is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.
 

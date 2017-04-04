@@ -6,8 +6,8 @@
 </description>
     <link>https://mlxai.github.io/</link>
     <atom:link href="https://mlxai.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 25 Jan 2017 00:24:32 +0700</pubDate>
-    <lastBuildDate>Wed, 25 Jan 2017 00:24:32 +0700</lastBuildDate>
+    <pubDate>Tue, 04 Apr 2017 12:47:39 +0700</pubDate>
+    <lastBuildDate>Tue, 04 Apr 2017 12:47:39 +0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -195,7 +195,7 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;
 \begin{align*}
-\frac{dL_i}{dw_j} = \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i \tag{2}
+\frac{dL_i}{dw_j} = \frac{e^{f_{j}}}{\sum_j e^{f_j}} x_i \tag{2}
 \end{align*}
 &lt;/script&gt;
 
@@ -213,7 +213,7 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 &lt;h6 id=&quot;vectorized-computation-of-gradient&quot;&gt;Vectorized computation of gradient&lt;/h6&gt;
 
-&lt;p&gt;Looking at the terms &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f_{y_i}}}{\sum_j e^{f_j}}&lt;/script&gt; in equations (2) and (3), we can vectorize computation by multiplying &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, as in the case of loss computation. To get the term &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f_{y_i}}}{\sum_j e^{f_j}} x_i&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt; has to multiply with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; &lt;em&gt;somehow&lt;/em&gt;. Keep in mind that the gradient matrix &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; shares the shape with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, that is, &lt;script type=&quot;math/tex&quot;&gt;D\times C&lt;/script&gt;. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; of shape &lt;script type=&quot;math/tex&quot;&gt;D \times C&lt;/script&gt; is &lt;script type=&quot;math/tex&quot;&gt;\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)&lt;/script&gt;.&lt;/p&gt;
+&lt;p&gt;Looking at the terms &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f}}{\sum_j e^{f_j}}&lt;/script&gt; in equations (2) and (3), we can vectorize computation by multiplying &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, as in the case of loss computation. To get the term &lt;script type=&quot;math/tex&quot;&gt;\frac{e^{f}}{\sum_j e^{f_j}} x_i&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt; has to multiply with &lt;script type=&quot;math/tex&quot;&gt;X&lt;/script&gt; &lt;em&gt;somehow&lt;/em&gt;. Keep in mind that the gradient matrix &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; shares the shape with &lt;script type=&quot;math/tex&quot;&gt;W&lt;/script&gt;, that is, &lt;script type=&quot;math/tex&quot;&gt;D\times C&lt;/script&gt;. Vectorization becomes clear once we analyze the shape of these matrices. In this case, the only way to produce &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dW}&lt;/script&gt; of shape &lt;script type=&quot;math/tex&quot;&gt;D \times C&lt;/script&gt; is &lt;script type=&quot;math/tex&quot;&gt;\underset{D\times N}X^T(\underset{N\times D}X \underset{D\times C}W)&lt;/script&gt;.&lt;/p&gt;
 
 &lt;p&gt;The IPython Notebook &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip&quot;&gt;softmax.ipynb&lt;/a&gt; from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.&lt;/p&gt;
 
