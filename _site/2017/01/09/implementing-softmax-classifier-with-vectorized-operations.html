@@ -76,14 +76,12 @@
           <p>Implementing a Softmax classifier is almost similar to <a href="https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html">SVM one</a>, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
-
 \begin{align*}
 L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\ 
 &= -f_{y_i} + \log\sum_j e^{f_j} \tag{1} \\
-\end{align*}
- %]]></script>
+\end{align*} %]]></script>
 
-<p>where </p>
+<p>where</p>
 
 <ul>
   <li><script type="math/tex">f_j(z) = \frac{e^{z_j}}{\sum_k e^{z_k}}</script> is a Softmax function,</li>
@@ -96,19 +94,15 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 <p>It is not difficult to derive analytic gradient of this loss function as follows:</p>
 
-<script type="math/tex; mode=display">
-\begin{align*}
+<script type="math/tex; mode=display">\begin{align*}
 \frac{dL_i}{dw_j} = \frac{e^{f_{j}}}{\sum_j e^{f_j}} x_i \tag{2}
-\end{align*}
-</script>
+\end{align*}</script>
 
 <p>and</p>
 
-<script type="math/tex; mode=display">
-\begin{align*}
+<script type="math/tex; mode=display">\begin{align*}
 \frac{dL_i}{dw_{y_i}} = ( \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} - 1 ) x_i \tag{3}
-\end{align*}
-</script>
+\end{align*}</script>
 
 <h6 id="vectorized-computation-of-loss-function">Vectorized computation of loss function</h6>
 
@@ -120,24 +114,24 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 <p>The IPython Notebook <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip">softmax.ipynb</a> from <a href="http://vision.stanford.edu/teaching/cs231n/syllabus.html">Stanford CS231n</a> is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">softmax_loss_vectorized</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Softmax loss function, vectorized version.</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">softmax_loss_vectorized</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">reg</span><span class="p">):</span>
+  <span class="s">"""
+  Softmax loss function, vectorized version.
 
-<span class="sd">  Inputs have dimension D, there are C classes, and we operate on minibatches</span>
-<span class="sd">  of N examples.</span>
+  Inputs have dimension D, there are C classes, and we operate on minibatches
+  of N examples.
 
-<span class="sd">  Inputs:</span>
-<span class="sd">  - W: A numpy array of shape (D, C) containing weights.</span>
-<span class="sd">  - X: A numpy array of shape (N, D) containing a minibatch of data.</span>
-<span class="sd">  - y: A numpy array of shape (N,) containing training labels; y[i] = c means</span>
-<span class="sd">    that X[i] has label c, where 0 &lt;= c &lt; C.</span>
-<span class="sd">  - reg: (float) regularization strength</span>
+  Inputs:
+  - W: A numpy array of shape (D, C) containing weights.
+  - X: A numpy array of shape (N, D) containing a minibatch of data.
+  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
+    that X[i] has label c, where 0 &lt;= c &lt; C.
+  - reg: (float) regularization strength
 
-<span class="sd">  Returns a tuple of:</span>
-<span class="sd">  - loss as single float</span>
-<span class="sd">  - gradient with respect to weights W; an array of same shape as W</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+  Returns a tuple of:
+  - loss as single float
+  - gradient with respect to weights W; an array of same shape as W
+  """</span>
   <span class="c"># Initialize the loss and gradient to zero.</span>
   <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.0</span>
   <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
@@ -145,21 +139,21 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
   <span class="c">#############################################################################</span>
   <span class="c"># TODO: Compute the softmax loss and its gradient using no explicit loops.  #</span>
   <span class="c"># Store the loss in loss and the gradient in dW. If you are not careful     #</span>
-  <span class="c"># here, it is easy to run into numeric instability. Don&#39;t forget the        #</span>
+  <span class="c"># here, it is easy to run into numeric instability. Don't forget the        #</span>
   <span class="c"># regularization!                                                           #</span>
   <span class="c">#############################################################################</span>
   <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
   <span class="n">C</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
   <span class="n">f</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>
-  <span class="n">f</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+  <span class="n">f</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="nb">max</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
     
   <span class="n">term1</span> <span class="o">=</span> <span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">y</span><span class="p">]</span>
-  <span class="n">sum_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">sum_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
   <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sum_j</span><span class="p">)</span>
   <span class="n">loss</span> <span class="o">=</span> <span class="n">term1</span> <span class="o">+</span> <span class="n">term2</span>
   <span class="n">loss</span> <span class="o">/=</span> <span class="n">N</span> 
-  <span class="n">loss</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">W</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
+  <span class="n">loss</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">W</span> <span class="o">*</span> <span class="n">W</span><span class="p">)</span>
   
   <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sum_j</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
   <span class="n">coef</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">),</span><span class="n">y</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -170,7 +164,7 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
   <span class="c">#                          END OF YOUR CODE                                 #</span>
   <span class="c">#############################################################################</span>
 
-  <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">dW</span></code></pre></div>
+  <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">dW</span></code></pre></figure>
 
 <center><em><sup>cs231n/classifiers/softmax.py</sup></em></center>
 
@@ -231,7 +225,7 @@ L_i &= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
             <footer class="site-footer">
               <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>              
               <div class="inner">
-                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2017<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
+                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2018<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
               </div>
             </footer>
           </div>

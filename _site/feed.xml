@@ -6,13 +6,13 @@
 </description>
     <link>https://mlxai.github.io/</link>
     <atom:link href="https://mlxai.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 04 Apr 2017 12:47:39 +0700</pubDate>
-    <lastBuildDate>Tue, 04 Apr 2017 12:47:39 +0700</lastBuildDate>
-    <generator>Jekyll v2.4.0</generator>
+    <pubDate>Sat, 03 Mar 2018 13:49:39 +0700</pubDate>
+    <lastBuildDate>Sat, 03 Mar 2018 13:49:39 +0700</lastBuildDate>
+    <generator>Jekyll v3.6.2</generator>
     
       <item>
         <title>A Modular Approach to Implementing Fully-Connected Neural Networks</title>
-        <description>&lt;p&gt;I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt; for the uninitiated.&lt;/p&gt;
+        <description>&lt;p&gt;I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression &lt;code class=&quot;highlighter-rouge&quot;&gt;db = np.sum(dout, axis=0)&lt;/code&gt; for the uninitiated.&lt;/p&gt;
 
 &lt;p&gt;To become a backpropagation ninja, I recommend succinct study materials from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; &lt;a href=&quot;http://cs231n.github.io/optimization-2/&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://cs231n.github.io/neural-networks-case-study/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
@@ -21,11 +21,11 @@
 &lt;p&gt;The exercise &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment2.zip&quot;&gt;FullyConnectedNets.ipynb&lt;/a&gt; provided with the materials will introduce you to a modular layer design, and then use those layers to implement fully-connected networks of arbitrary depth.&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;… For each layer we will implement a &lt;code&gt;forward&lt;/code&gt; and a &lt;code&gt;backward&lt;/code&gt; function. The &lt;code&gt;forward&lt;/code&gt; function will receive inputs, weights, and other parameters and will return both an output and a &lt;code&gt;cache&lt;/code&gt; object storing data needed for the backward pass, like this:&lt;/p&gt;
+  &lt;p&gt;… For each layer we will implement a &lt;code class=&quot;highlighter-rouge&quot;&gt;forward&lt;/code&gt; and a &lt;code class=&quot;highlighter-rouge&quot;&gt;backward&lt;/code&gt; function. The &lt;code class=&quot;highlighter-rouge&quot;&gt;forward&lt;/code&gt; function will receive inputs, weights, and other parameters and will return both an output and a &lt;code class=&quot;highlighter-rouge&quot;&gt;cache&lt;/code&gt; object storing data needed for the backward pass, like this:&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot; Receive inputs x and weights w &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot; Receive inputs x and weights w &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Do some computations ...&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# ... some intermediate value&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Do some more computations ...&lt;/span&gt;
@@ -33,17 +33,17 @@
    
   &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Values we need to compute gradients&lt;/span&gt;
    
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;The backward pass will receive upstream derivatives and the &lt;code&gt;cache&lt;/code&gt; object, and will return gradients with respect to the inputs and weights, like this:&lt;/p&gt;
+  &lt;p&gt;The backward pass will receive upstream derivatives and the &lt;code class=&quot;highlighter-rouge&quot;&gt;cache&lt;/code&gt; object, and will return gradients with respect to the inputs and weights, like this:&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Receive derivative of loss with respect to outputs and cache,&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  and compute derivative with respect to inputs.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Receive derivative of loss with respect to outputs and cache,
+  and compute derivative with respect to inputs.
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Unpack cache values&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
   
@@ -51,30 +51,30 @@
   &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Derivative of loss with respect to x&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Derivative of loss with respect to w&lt;/span&gt;
   
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;After implementing a bunch of layers this way, we will be able to easily combine them to build classifiers with different architectures.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Below is a sample implementation of &lt;code&gt;layer_forward&lt;/code&gt; and &lt;code&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Below is a sample implementation of &lt;code class=&quot;highlighter-rouge&quot;&gt;layer_forward&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Computes the forward pass for an affine (fully-connected) layer.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  examples, where each example x[i] has shape (d_1, ..., d_k). We will&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  reshape each input into a vector of dimension D = d_1 * ... * d_k, and&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  then transform it to an output vector of dimension M.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - w: A numpy array of weights, of shape (D, M)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - b: A numpy array of biases, of shape (M,)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - out: output, of shape (N, M)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - cache: (x, w, b)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Computes the forward pass for an affine (fully-connected) layer.
+  The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N
+  examples, where each example x[i] has shape (d_1, ..., d_k). We will
+  reshape each input into a vector of dimension D = d_1 * ... * d_k, and
+  then transform it to an output vector of dimension M.
+  Inputs:
+  - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)
+  - w: A numpy array of weights, of shape (D, M)
+  - b: A numpy array of biases, of shape (M,)
+  
+  Returns a tuple of:
+  - out: output, of shape (N, M)
+  - cache: (x, w, b)
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# TODO: Implement the affine forward pass. Store the result in out. You     #&lt;/span&gt;
@@ -88,20 +88,20 @@
   &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
 
 &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;layer_backward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Computes the backward pass for an affine layer.&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Computes the backward pass for an affine layer.
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - dout: Upstream derivative, of shape (N, M)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - cache: Tuple of:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    - x: Input data, of shape (N, d_1, ... d_k)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    - w: Weights, of shape (D, M)&lt;/span&gt;
+  Inputs:
+  - dout: Upstream derivative, of shape (N, M)
+  - cache: Tuple of:
+    - x: Input data, of shape (N, d_1, ... d_k)
+    - w: Weights, of shape (D, M)
 
-&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - dw: Gradient with respect to w, of shape (D, M)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - db: Gradient with respect to b, of shape (M,)&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  Returns a tuple of:
+  - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)
+  - dw: Gradient with respect to w, of shape (D, M)
+  - db: Gradient with respect to b, of shape (M,)
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cache&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
@@ -109,23 +109,23 @@
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#                             END OF YOUR CODE                              #&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;It is not difficult to derive gradients &lt;code&gt;dx&lt;/code&gt; and &lt;code&gt;dw&lt;/code&gt; and implement them in Python. The gradient &lt;code&gt;db&lt;/code&gt;, however, requires careful thought. The expression &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt; is not easy to understand. &lt;/p&gt;
+&lt;p&gt;It is not difficult to derive gradients &lt;code class=&quot;highlighter-rouge&quot;&gt;dx&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;dw&lt;/code&gt; and implement them in Python. The gradient &lt;code class=&quot;highlighter-rouge&quot;&gt;db&lt;/code&gt;, however, requires careful thought. The expression &lt;code class=&quot;highlighter-rouge&quot;&gt;db = np.sum(dout, axis=0)&lt;/code&gt; is not easy to understand.&lt;/p&gt;
 
 &lt;p&gt;First, you need to understand what really happens inside this simple equation &lt;script type=&quot;math/tex&quot;&gt;out = xw + b&lt;/script&gt;. One way to understand this is by analyzing dimensions of the matrices. That is, &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(1 \times M)}b&lt;/script&gt;.&lt;/p&gt;
 
-&lt;p&gt;Do you notice incompatibility of &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt;’s dimension and &lt;script type=&quot;math/tex&quot;&gt;out&lt;/script&gt;’s? Think of it for a second and read on! &lt;/p&gt;
+&lt;p&gt;Do you notice incompatibility of &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt;’s dimension and &lt;script type=&quot;math/tex&quot;&gt;out&lt;/script&gt;’s? Think of it for a second and read on!&lt;/p&gt;
 
 &lt;p&gt;What happens in the expression is broadcast of &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;1 \times M&lt;/script&gt; to &lt;script type=&quot;math/tex&quot;&gt;N \times M&lt;/script&gt;. Intuitively, there is only one set of bias of size &lt;script type=&quot;math/tex&quot;&gt;M&lt;/script&gt; which shares across all examples &lt;script type=&quot;math/tex&quot;&gt;x&lt;/script&gt;. In fact, there is an &lt;em&gt;invisible input&lt;/em&gt; for the bias term. That is, &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b&lt;/script&gt; where &lt;script type=&quot;math/tex&quot;&gt;ix&lt;/script&gt; contains all 1’s and stays there just for the sake of facilitating later calculation. (As the term suggests, bias does not depend on the input.)&lt;/p&gt;
 
-&lt;p&gt;That’s it for &lt;code&gt;layer_forward&lt;/code&gt;. Now, let’s proceed to &lt;code&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;That’s it for &lt;code class=&quot;highlighter-rouge&quot;&gt;layer_forward&lt;/code&gt;. Now, let’s proceed to &lt;code class=&quot;highlighter-rouge&quot;&gt;layer_backward&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Considering &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b&lt;/script&gt;, we can derive &lt;script type=&quot;math/tex&quot;&gt;db&lt;/script&gt; (in short, for &lt;script type=&quot;math/tex&quot;&gt;\frac{dLoss}{db}&lt;/script&gt;) using a chain rule with &lt;script type=&quot;math/tex&quot;&gt;\underset{(1 \times M)}{db} = \underset{(1 \times N)}{ix^\mathsf{T}} \underset{(N \times M)}{dout}&lt;/script&gt;. Recall that &lt;script type=&quot;math/tex&quot;&gt;ix&lt;/script&gt; is all 1’s; therefore, the expression just sums &lt;script type=&quot;math/tex&quot;&gt;dout&lt;/script&gt; along axis = 0, that is, &lt;code&gt;db = np.sum(dout, axis=0)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Considering &lt;script type=&quot;math/tex&quot;&gt;\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b&lt;/script&gt;, we can derive &lt;script type=&quot;math/tex&quot;&gt;db&lt;/script&gt; (in short, for &lt;script type=&quot;math/tex&quot;&gt;\frac{dLoss}{db}&lt;/script&gt;) using a chain rule with &lt;script type=&quot;math/tex&quot;&gt;\underset{(1 \times M)}{db} = \underset{(1 \times N)}{ix^\mathsf{T}} \underset{(N \times M)}{dout}&lt;/script&gt;. Recall that &lt;script type=&quot;math/tex&quot;&gt;ix&lt;/script&gt; is all 1’s; therefore, the expression just sums &lt;script type=&quot;math/tex&quot;&gt;dout&lt;/script&gt; along axis = 0, that is, &lt;code class=&quot;highlighter-rouge&quot;&gt;db = np.sum(dout, axis=0)&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Not really trivial, is it?&lt;/p&gt;
 
@@ -151,8 +151,8 @@
     extensions: [&quot;tex2jax.js&quot;],
     jax: [&quot;input/TeX&quot;, &quot;output/HTML-CSS&quot;],
     tex2jax: {
-      inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
-      displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ],
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      displayMath: [ ['$$','$$'], [&quot;\\[&quot;,&quot;\\]&quot;] ],
       processEscapes: true
     },
     &quot;HTML-CSS&quot;: { availableFonts: [&quot;TeX&quot;] },
@@ -173,14 +173,12 @@
         <description>&lt;p&gt;Implementing a Softmax classifier is almost similar to &lt;a href=&quot;https://mlxai.github.io/2017/01/06/vectorized-implementation-of-svm-loss-and-gradient-update.html&quot;&gt;SVM one&lt;/a&gt;, except using a different loss function. A Softmax classifier optimizes a cross-entropy loss that has the form:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-
 \begin{align*}
 L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\ 
 &amp;= -f_{y_i} + \log\sum_j e^{f_j} \tag{1} \\
-\end{align*}
- %]]&gt;&lt;/script&gt;
+\end{align*} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;where &lt;/p&gt;
+&lt;p&gt;where&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;f_j(z) = \frac{e^{z_j}}{\sum_k e^{z_k}}&lt;/script&gt; is a Softmax function,&lt;/li&gt;
@@ -193,19 +191,15 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 &lt;p&gt;It is not difficult to derive analytic gradient of this loss function as follows:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{align*}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
 \frac{dL_i}{dw_j} = \frac{e^{f_{j}}}{\sum_j e^{f_j}} x_i \tag{2}
-\end{align*}
-&lt;/script&gt;
+\end{align*}&lt;/script&gt;
 
 &lt;p&gt;and&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{align*}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
 \frac{dL_i}{dw_{y_i}} = ( \frac{e^{f_{y_i}}}{\sum_j e^{f_j}} - 1 ) x_i \tag{3}
-\end{align*}
-&lt;/script&gt;
+\end{align*}&lt;/script&gt;
 
 &lt;h6 id=&quot;vectorized-computation-of-loss-function&quot;&gt;Vectorized computation of loss function&lt;/h6&gt;
 
@@ -217,24 +211,24 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 &lt;p&gt;The IPython Notebook &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/winter1516_assignment1.zip&quot;&gt;softmax.ipynb&lt;/a&gt; from &lt;a href=&quot;http://vision.stanford.edu/teaching/cs231n/syllabus.html&quot;&gt;Stanford CS231n&lt;/a&gt; is a great starting point to understand implementation of a Softmax classifier. The exercise asks us to implement both non-vectorized and vectorized versions of loss function and gradient update. Below is a sample of vectorized implementation.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;softmax_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Softmax loss function, vectorized version.&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;softmax_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Softmax loss function, vectorized version.
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs have dimension D, there are C classes, and we operate on minibatches&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  of N examples.&lt;/span&gt;
+  Inputs have dimension D, there are C classes, and we operate on minibatches
+  of N examples.
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - W: A numpy array of shape (D, C) containing weights.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - X: A numpy array of shape (N, D) containing a minibatch of data.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - y: A numpy array of shape (N,) containing training labels; y[i] = c means&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - reg: (float) regularization strength&lt;/span&gt;
+  Inputs:
+  - W: A numpy array of shape (D, C) containing weights.
+  - X: A numpy array of shape (N, D) containing a minibatch of data.
+  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
+    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.
+  - reg: (float) regularization strength
 
-&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - loss as single float&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - gradient with respect to weights W; an array of same shape as W&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  Returns a tuple of:
+  - loss as single float
+  - gradient with respect to weights W; an array of same shape as W
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Initialize the loss and gradient to zero.&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros_like&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -242,21 +236,21 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# TODO: Compute the softmax loss and its gradient using no explicit loops.  #&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Store the loss in loss and the gradient in dW. If you are not careful     #&lt;/span&gt;
-  &lt;span class=&quot;c&quot;&gt;# here, it is easy to run into numeric instability. Don&amp;#39;t forget the        #&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# here, it is easy to run into numeric instability. Don't forget the        #&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# regularization!                                                           #&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
 
   &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
     
   &lt;span class=&quot;n&quot;&gt;term1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;term2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;term1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;term2&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; 
-  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   
   &lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum_j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
@@ -267,7 +261,7 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
   &lt;span class=&quot;c&quot;&gt;#                          END OF YOUR CODE                                 #&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
 
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/softmax.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
 
@@ -286,8 +280,8 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
     extensions: [&quot;tex2jax.js&quot;],
     jax: [&quot;input/TeX&quot;, &quot;output/HTML-CSS&quot;],
     tex2jax: {
-      inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
-      displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ],
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      displayMath: [ ['$$','$$'], [&quot;\\[&quot;,&quot;\\]&quot;] ],
       processEscapes: true
     },
     &quot;HTML-CSS&quot;: { availableFonts: [&quot;TeX&quot;] },
@@ -313,31 +307,28 @@ L_i &amp;= -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \\
 
 &lt;p&gt;SVM loss (a.k.a. hinge loss) function can be defined as:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{equation}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 L_i = \sum_{j\neq y_i} \left[ \max(0, x_iw_j - x_iw_{y_i} + \Delta) \right] \tag{1}
-\end{equation}
-&lt;/script&gt;
+\end{equation}&lt;/script&gt;
 
 &lt;p&gt;where&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;i&lt;/script&gt; iterates over all N examples,&lt;/li&gt;
   &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; iterates over all C classes,&lt;/li&gt;
-  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;L_i&lt;/script&gt; is loss for classifying a single example &lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt; (row vector), &lt;/li&gt;
-  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;w_j&lt;/script&gt; is the weights (column vector) for computing the score of class &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt;, &lt;/li&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;L_i&lt;/script&gt; is loss for classifying a single example &lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt; (row vector),&lt;/li&gt;
+  &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;w_j&lt;/script&gt; is the weights (column vector) for computing the score of class &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt;,&lt;/li&gt;
   &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; is the index of the correct class of &lt;script type=&quot;math/tex&quot;&gt;x_i&lt;/script&gt;, and&lt;/li&gt;
   &lt;li&gt;&lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt; is a margin parameter&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Intuitively, SVM wants score, &lt;script type=&quot;math/tex&quot;&gt;x_iw_{y_i}&lt;/script&gt;, of the correct class, &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt;, to be greater than any other classes, &lt;script type=&quot;math/tex&quot;&gt;x_iw_j&lt;/script&gt;, by at least &lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt; such that the loss becomes zero (clamped with the max operation). &lt;/p&gt;
+&lt;p&gt;Intuitively, SVM wants score, &lt;script type=&quot;math/tex&quot;&gt;x_iw_{y_i}&lt;/script&gt;, of the correct class, &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt;, to be greater than any other classes, &lt;script type=&quot;math/tex&quot;&gt;x_iw_j&lt;/script&gt;, by at least &lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt; such that the loss becomes zero (clamped with the max operation).&lt;/p&gt;
 
 &lt;h6 id=&quot;analytic-gradient&quot;&gt;Analytic gradient&lt;/h6&gt;
 
 &lt;p&gt;Gradient of the loss function for a single example can be written in full detail as:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-
 \nabla_{w} L_i 
   =
   \begin{bmatrix}
@@ -348,52 +339,42 @@ L_i = \sum_{j\neq y_i} \left[ \max(0, x_iw_j - x_iw_{y_i} + \Delta) \right] \tag
     \frac{dL_i}{dw_{11}} &amp; \frac{dL_i}{dw_{21}} &amp; \cdots &amp; \frac{dL_i}{dw_{y_i1}} &amp; \cdots &amp; \frac{dL_i}{dw_{C1}} \\
     \vdots &amp; \ddots \\
     \frac{dL_i}{dw_{1D}} &amp; \frac{dL_i}{dw_{2D}} &amp; \cdots &amp; \frac{dL_i}{dw_{y_iD}} &amp; \cdots &amp; \frac{dL_i}{dw_{CD}} 
-  \end{bmatrix}
- %]]&gt;&lt;/script&gt;
+  \end{bmatrix} %]]&gt;&lt;/script&gt;
 
 &lt;p&gt;First, let’s find a sub-gradient &lt;script type=&quot;math/tex&quot;&gt;\frac{dL_i}{dw_{11}}&lt;/script&gt; by considering all the terms in equation (1):&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-
 \begin{align*}
 L_i = &amp;\max(0, x_{i1}w_{11} + x_{i2}w_{12} \ldots + x_{iD}w_{1D} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta) + \\
  &amp;\max(0, x_{i1}w_{21} + x_{i2}w_{22} \ldots + x_{iD}w_{2D} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta) + \\
 &amp;\quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \vdots \\
 &amp;\max(0, x_{i1}w_{C1} + x_{i2}w_{C2} \ldots + x_{iD}w_{CD} - x_{i1}w_{y_i1} - x_{i2}w_{y_i2} \ldots - x_{iD}w_{y_iD} + \Delta)
-\end{align*}
- %]]&gt;&lt;/script&gt;
+\end{align*} %]]&gt;&lt;/script&gt;
 
 &lt;p&gt;For a general case, if &lt;script type=&quot;math/tex&quot;&gt;(x_iw_1 - x_iw_{y_i} + \Delta) &gt; 0&lt;/script&gt;:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{equation}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 \frac{dL_i}{dw_{11}} = x_{i1}
-\end{equation}
-&lt;/script&gt;
+\end{equation}&lt;/script&gt;
 
 &lt;p&gt;Equivalently, using an indicator function:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{equation}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 \frac{dL_i}{dw_{11}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta &gt; 0) x_{i1}
-\end{equation}
-&lt;/script&gt;
+\end{equation}&lt;/script&gt;
 
 &lt;p&gt;Similarly,&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{equation}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 \frac{dL_i}{dw_{12}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta &gt; 0) x_{i2} \\
 \frac{dL_i}{dw_{13}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta &gt; 0) x_{i3} \\
 \vdots \\
 \frac{dL_i}{dw_{1D}} = \mathbb{1}(x_iw_1 - x_iw_{y_i} + \Delta &gt; 0) x_{iD}
-\end{equation}
-&lt;/script&gt;
+\end{equation}&lt;/script&gt;
 
-&lt;p&gt;Hence, &lt;/p&gt;
+&lt;p&gt;Hence,&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-
 \begin{align*}
 \frac{dL_i}{dw_{j}} &amp;= \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0)
   \begin{bmatrix}
@@ -404,21 +385,17 @@ L_i = &amp;\max(0, x_{i1}w_{11} + x_{i2}w_{12} \ldots + x_{iD}w_{1D} - x_{i1}w_{
   \end{bmatrix}
 \\
 &amp;= \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0) x_i \tag{2}
-\end{align*}
- %]]&gt;&lt;/script&gt;
+\end{align*} %]]&gt;&lt;/script&gt;
 
 &lt;p&gt;For a special case where &lt;script type=&quot;math/tex&quot;&gt;j=y_i&lt;/script&gt;,&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;
-\begin{equation}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 \frac{dL_i}{dw_{y_{i1}}} = -(\ldots) x_{i1}
-\end{equation}
-&lt;/script&gt;
+\end{equation}&lt;/script&gt;
 
 &lt;p&gt;The coefficent of &lt;script type=&quot;math/tex&quot;&gt;x_{i1}&lt;/script&gt; is the number of classes that meet the desire margin. Mathematically speaking, &lt;script type=&quot;math/tex&quot;&gt;\sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0)&lt;/script&gt;. Hence,&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-
 \begin{align*}
 \frac{dL_i}{dw_{y_i}} &amp;= - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0)
   \begin{bmatrix}
@@ -429,8 +406,7 @@ L_i = &amp;\max(0, x_{i1}w_{11} + x_{i2}w_{12} \ldots + x_{iD}w_{1D} - x_{i1}w_{
   \end{bmatrix}
 \\
 &amp;= - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0) x_i \tag{3}
-\end{align*}
- %]]&gt;&lt;/script&gt;
+\end{align*} %]]&gt;&lt;/script&gt;
 
 &lt;p&gt;Equipped with equations (1), (2) and (3), we have enough information to implement a loss function and gradient update.&lt;/p&gt;
 
@@ -442,33 +418,31 @@ L_i = &amp;\max(0, x_{i1}w_{11} + x_{i2}w_{12} \ldots + x_{iD}w_{1D} - x_{i1}w_{
 
 &lt;p&gt;We compute analytic gradient
 &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
-
 \nabla_{w} L_i 
   =
   \begin{bmatrix}
     \frac{dL_i}{dw_1} &amp; \frac{dL_i}{dw_2} &amp; \cdots &amp; \frac{dL_i}{dw_C} 
-  \end{bmatrix}
- %]]&gt;&lt;/script&gt;
-one element at a time in the inner loop. Considering equation (2), we compute the gradient w.r.t. weights of class &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; with &lt;code&gt;dW[:,j] += X[i,:]&lt;/code&gt;. Note that we use &lt;code&gt;+=&lt;/code&gt; here as we have to collect the gradient across all classes &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; and across all examples. Considering equation (3), we compute the gradient of class $y_i$ with &lt;code&gt;dW[:,y[i]] -= X[i,:]&lt;/code&gt;. Unlike the previous case, this single class &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; requires us to count the number of classes that satisfy the margin condition; hence, the use of &lt;code&gt;-=&lt;/code&gt;.&lt;/p&gt;
+  \end{bmatrix} %]]&gt;&lt;/script&gt;
+one element at a time in the inner loop. Considering equation (2), we compute the gradient w.r.t. weights of class &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;dW[:,j] += X[i,:]&lt;/code&gt;. Note that we use &lt;code class=&quot;highlighter-rouge&quot;&gt;+=&lt;/code&gt; here as we have to collect the gradient across all classes &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; and across all examples. Considering equation (3), we compute the gradient of class $y_i$ with &lt;code class=&quot;highlighter-rouge&quot;&gt;dW[:,y[i]] -= X[i,:]&lt;/code&gt;. Unlike the previous case, this single class &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; requires us to count the number of classes that satisfy the margin condition; hence, the use of &lt;code class=&quot;highlighter-rouge&quot;&gt;-=&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;svm_loss_naive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Structured SVM loss function, naive implementation (with loops).&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;svm_loss_naive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Structured SVM loss function, naive implementation (with loops).
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs have dimension D, there are C classes, and we operate on minibatches&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  of N examples.&lt;/span&gt;
+  Inputs have dimension D, there are C classes, and we operate on minibatches
+  of N examples.
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - W: A numpy array of shape (D, C) containing weights.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - X: A numpy array of shape (N, D) containing a minibatch of data.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - y: A numpy array of shape (N,) containing training labels; y[i] = c means&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - reg: (float) regularization strength&lt;/span&gt;
+  Inputs:
+  - W: A numpy array of shape (D, C) containing weights.
+  - X: A numpy array of shape (N, D) containing a minibatch of data.
+  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
+    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.
+  - reg: (float) regularization strength
 
-&lt;span class=&quot;sd&quot;&gt;  Returns a tuple of:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - loss as single float&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  - gradient with respect to weights W; an array of same shape as W&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  Returns a tuple of:
+  - loss as single float
+  - gradient with respect to weights W; an array of same shape as W
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# initialize the gradient as zero&lt;/span&gt;
   
   &lt;span class=&quot;c&quot;&gt;# compute the loss and the gradient&lt;/span&gt;
@@ -492,10 +466,10 @@ one element at a time in the inner loop. Considering equation (2), we compute th
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;
 
   &lt;span class=&quot;c&quot;&gt;# Add regularization&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;
   
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/linear_svm.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
 
@@ -503,13 +477,13 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 &lt;h6 id=&quot;vectorized-implementation&quot;&gt;Vectorized implementation&lt;/h6&gt;
 
-&lt;p&gt;Instead of computing scores for each example, &lt;script type=&quot;math/tex&quot;&gt;x_iW&lt;/script&gt;, we can compute them all at once with full matrix multiplication, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt;. To compute the loss, this score matrix has to be subtracted row-wise by scores of correct classes and then added with &lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt;. Because the loss equation sums over all &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt;, we have to set the &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; component to zero. The trick to select correct-class scores across all examples is to use an array indexing technique together with NumPy’s &lt;code&gt;arange&lt;/code&gt;. The idea of computing loss is illustrated below.&lt;/p&gt;
+&lt;p&gt;Instead of computing scores for each example, &lt;script type=&quot;math/tex&quot;&gt;x_iW&lt;/script&gt;, we can compute them all at once with full matrix multiplication, &lt;script type=&quot;math/tex&quot;&gt;XW&lt;/script&gt;. To compute the loss, this score matrix has to be subtracted row-wise by scores of correct classes and then added with &lt;script type=&quot;math/tex&quot;&gt;\Delta&lt;/script&gt;. Because the loss equation sums over all &lt;script type=&quot;math/tex&quot;&gt;j&lt;/script&gt; except &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt;, we have to set the &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; component to zero. The trick to select correct-class scores across all examples is to use an array indexing technique together with NumPy’s &lt;code class=&quot;highlighter-rouge&quot;&gt;arange&lt;/code&gt;. The idea of computing loss is illustrated below.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/1.jpg&quot; alt=&quot;Illustration of computing loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Computing gradient in fully vectorized form is more complicated, but, fortunately, intermediate result of loss computation can be reused. When we compute the loss, we produce a matrix, called &lt;code&gt;margins&lt;/code&gt; (see the code below). This is almost exactly what we need to compute gradient in equation (2). The indicator function in (2) suggests us to “binarize” this matrix with &lt;code&gt;binary[margins &amp;gt; 0] = 1&lt;/code&gt;. According to equation (3), we need to update the binarized matrix by summing across each column with &lt;code&gt;row_sum = np.sum(binary, axis=1)&lt;/code&gt;, taking the negative values, and assigning them to &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; components with &lt;code&gt;binary[np.arange(num_train), y] = -row_sum.T&lt;/code&gt;. Finally, by looking at the last component of both equations, we multiply the binarized matrix with &lt;script type=&quot;math/tex&quot;&gt;X^T&lt;/script&gt;. (The gradient matrix is of shape DxC; the only way to produce this is &lt;script type=&quot;math/tex&quot;&gt;X^T binary&lt;/script&gt;) &lt;/p&gt;
+&lt;p&gt;Computing gradient in fully vectorized form is more complicated, but, fortunately, intermediate result of loss computation can be reused. When we compute the loss, we produce a matrix, called &lt;code class=&quot;highlighter-rouge&quot;&gt;margins&lt;/code&gt; (see the code below). This is almost exactly what we need to compute gradient in equation (2). The indicator function in (2) suggests us to “binarize” this matrix with &lt;code class=&quot;highlighter-rouge&quot;&gt;binary[margins &amp;gt; 0] = 1&lt;/code&gt;. According to equation (3), we need to update the binarized matrix by summing across each column with &lt;code class=&quot;highlighter-rouge&quot;&gt;row_sum = np.sum(binary, axis=1)&lt;/code&gt;, taking the negative values, and assigning them to &lt;script type=&quot;math/tex&quot;&gt;y_i&lt;/script&gt; components with &lt;code class=&quot;highlighter-rouge&quot;&gt;binary[np.arange(num_train), y] = -row_sum.T&lt;/code&gt;. Finally, by looking at the last component of both equations, we multiply the binarized matrix with &lt;script type=&quot;math/tex&quot;&gt;X^T&lt;/script&gt;. (The gradient matrix is of shape DxC; the only way to produce this is &lt;script type=&quot;math/tex&quot;&gt;X^T binary&lt;/script&gt;)&lt;/p&gt;
 
-&lt;p&gt;Below is how vectorized computation flows. &lt;/p&gt;
+&lt;p&gt;Below is how vectorized computation flows.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/2.jpg&quot; alt=&quot;Illustration of computing gradient of SVM loss with fully vectorized operations&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -517,12 +491,12 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 &lt;p&gt;&lt;a href=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://mlxai.github.io/assets/article_images/2017-01-06-vectorized-implementation-of-svm-loss-and-gradient-update/3.jpg&quot; alt=&quot;Step-by-step explanation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;svm_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-  &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  Structured SVM loss function, vectorized implementation.&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;svm_loss_vectorized&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+  Structured SVM loss function, vectorized implementation.
 
-&lt;span class=&quot;sd&quot;&gt;  Inputs and outputs are the same as svm_loss_naive.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+  Inputs and outputs are the same as svm_loss_naive.
+  &quot;&quot;&quot;&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# initialize the gradient as zero&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
@@ -535,8 +509,8 @@ one element at a time in the inner loop. Considering equation (2), we compute th
   &lt;span class=&quot;n&quot;&gt;yi_scores&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# http://stackoverflow.com/a/23435843/459241 &lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maximum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;scores&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yi_scores&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;c&quot;&gt;# Implement a vectorized version of the gradient for the structured SVM     #&lt;/span&gt;
@@ -548,7 +522,7 @@ one element at a time in the inner loop. Considering equation (2), we compute th
   &lt;span class=&quot;c&quot;&gt;#############################################################################&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;margins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;row_sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;row_sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;row_sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
@@ -558,7 +532,7 @@ one element at a time in the inner loop. Considering equation (2), we compute th
   &lt;span class=&quot;c&quot;&gt;# Regularize&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;W&lt;/span&gt;
 
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dW&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/linear_svm.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
 
@@ -579,8 +553,8 @@ one element at a time in the inner loop. Considering equation (2), we compute th
     extensions: [&quot;tex2jax.js&quot;],
     jax: [&quot;input/TeX&quot;, &quot;output/HTML-CSS&quot;],
     tex2jax: {
-      inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
-      displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ],
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      displayMath: [ ['$$','$$'], [&quot;\\[&quot;,&quot;\\]&quot;] ],
       processEscapes: true
     },
     &quot;HTML-CSS&quot;: { availableFonts: [&quot;TeX&quot;] },
@@ -604,19 +578,19 @@ one element at a time in the inner loop. Considering equation (2), we compute th
   &lt;p&gt;The goal of this exercise is to wrap our head around vectorized array operations with NumPy.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;First, let’s warm up with finding L2 distances by implementing two for-loops. The code &lt;code&gt;np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))&lt;/code&gt;, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.&lt;/p&gt;
+&lt;p&gt;First, let’s warm up with finding L2 distances by implementing two for-loops. The code &lt;code class=&quot;highlighter-rouge&quot;&gt;np.sqrt(np.sum(np.square(X[i,:]-self.X_train[j,:])))&lt;/code&gt;, from innermost to outermost, first takes the difference element-wise between two data points, square them element-wise, sum across all elements, and then take the square root.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_two_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Compute the distance between each test point in X and each training point&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    in self.X_train using a nested loop over both the training data and the &lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    test data.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Input:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    X - An num_test x dimension array where each row is a test point.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Output:&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    dists - A num_test x num_train array where dists[i, j] is the distance&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;            between the ith test point and the jth training point.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_two_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a nested loop over both the training data and the 
+    test data.
+    Input:
+    X - An num_test x dimension array where each row is a test point.
+    Output:
+    dists - A num_test x num_train array where dists[i, j] is the distance
+            between the ith test point and the jth training point.
+    &quot;&quot;&quot;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
@@ -626,21 +600,21 @@ one element at a time in the inner loop. Considering equation (2), we compute th
         &lt;span class=&quot;c&quot;&gt;# Compute the l2 distance between the ith test point and the jth    #&lt;/span&gt;
         &lt;span class=&quot;c&quot;&gt;# training point, and store the result in dists[i, j]               #&lt;/span&gt;
         &lt;span class=&quot;c&quot;&gt;#####################################################################&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:])))&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+        &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:])))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/k_nearest_neighbor.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast &lt;code&gt;X[i,:] - self.X_train&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Second, the exercise challenges us to implement with one for-loop. Instead of finding one distance at a time, find ones between each test data point and all training data points. The trick is boiled down into one broadcast &lt;code class=&quot;highlighter-rouge&quot;&gt;X[i,:] - self.X_train&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_one_loop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Compute the distance between each test point in X and each training point&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    in self.X_train using a single loop over the test data.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Input / Output: Same as compute_distances_two_loops&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_one_loop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a single loop over the test data.
+    Input / Output: Same as compute_distances_two_loops
+    &quot;&quot;&quot;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
@@ -649,8 +623,8 @@ one element at a time in the inner loop. Considering equation (2), we compute th
       &lt;span class=&quot;c&quot;&gt;# Compute the l2 distance between the ith test point and all training #&lt;/span&gt;
       &lt;span class=&quot;c&quot;&gt;# points, and store the result in dists[i, :].                        #&lt;/span&gt;
       &lt;span class=&quot;c&quot;&gt;#######################################################################&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+      &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;em&gt;&lt;sup&gt;cs231n/classifiers/k_nearest_neighbor.py&lt;/sup&gt;&lt;/em&gt;&lt;/center&gt;
 
@@ -664,12 +638,12 @@ one element at a time in the inner loop. Considering equation (2), we compute th
 
 &lt;p&gt;&lt;a href=&quot;https://mlxai.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;https://mlxai.github.io/assets/article_images/2017-01-03-finding-distances-between-data-points-with-numpy/2.jpg&quot; alt=&quot;An illustration of fully vectorized implementation&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_no_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;sd&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Compute the distance between each test point in X and each training point&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    in self.X_train using no explicit loops.&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    Input / Output: Same as compute_distances_two_loops&lt;/span&gt;
-&lt;span class=&quot;sd&quot;&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;compute_distances_no_loops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using no explicit loops.
+    Input / Output: Same as compute_distances_two_loops
+    &quot;&quot;&quot;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_test&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; 
@@ -681,15 +655,15 @@ one element at a time in the inner loop. Considering equation (2), we compute th
     &lt;span class=&quot;c&quot;&gt;#       and two broadcast sums.                                         #&lt;/span&gt;
     &lt;span class=&quot;c&quot;&gt;#########################################################################&lt;/span&gt;
 
-    &lt;span class=&quot;c&quot;&gt;# Don&amp;#39;t do this gigantic broadcasts. Too long to execute...&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# Don't do this gigantic broadcasts. Too long to execute...&lt;/span&gt;
     &lt;span class=&quot;c&quot;&gt;# dists = np.sqrt(np.sum(np.square(X[:,np.newaxis,:] - self.X_train[np.newaxis,:,:]), axis=2))&lt;/span&gt;
     
     &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;te&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;tr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;te&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;tr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;square&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X_train&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;te&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dists&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;center&gt;&lt;i&gt;&lt;sup&gt;cs231n/classifiers/k_nearest_neighbor.py&lt;/sup&gt;&lt;/i&gt;&lt;/center&gt;
 

@@ -73,7 +73,7 @@
             <span class="post-reading-time"></span> read
           </div>
           <a name="topofpage"></a>
-          <p>I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression <code>db = np.sum(dout, axis=0)</code> for the uninitiated.</p>
+          <p>I write this post to clarify non-trivial issues in implementing forward and backward layers of fully-connected neural networks. The code is short and seems intuitive. However, I would like to elaborate on finding partial derivative w.r.t. the bias, that is, clarifying the expression <code class="highlighter-rouge">db = np.sum(dout, axis=0)</code> for the uninitiated.</p>
 
 <p>To become a backpropagation ninja, I recommend succinct study materials from <a href="http://vision.stanford.edu/teaching/cs231n/syllabus.html">Stanford CS231n</a> <a href="http://cs231n.github.io/optimization-2/">here</a> and <a href="http://cs231n.github.io/neural-networks-case-study/">here</a>.</p>
 
@@ -82,11 +82,11 @@
 <p>The exercise <a href="http://vision.stanford.edu/teaching/cs231n/winter1516_assignment2.zip">FullyConnectedNets.ipynb</a> provided with the materials will introduce you to a modular layer design, and then use those layers to implement fully-connected networks of arbitrary depth.</p>
 
 <blockquote>
-  <p>… For each layer we will implement a <code>forward</code> and a <code>backward</code> function. The <code>forward</code> function will receive inputs, weights, and other parameters and will return both an output and a <code>cache</code> object storing data needed for the backward pass, like this:</p>
+  <p>… For each layer we will implement a <code class="highlighter-rouge">forward</code> and a <code class="highlighter-rouge">backward</code> function. The <code class="highlighter-rouge">forward</code> function will receive inputs, weights, and other parameters and will return both an output and a <code class="highlighter-rouge">cache</code> object storing data needed for the backward pass, like this:</p>
 </blockquote>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot; Receive inputs x and weights w &quot;&quot;&quot;</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+  <span class="s">""" Receive inputs x and weights w """</span>
   <span class="c"># Do some computations ...</span>
   <span class="n">z</span> <span class="o">=</span> <span class="c"># ... some intermediate value</span>
   <span class="c"># Do some more computations ...</span>
@@ -94,17 +94,17 @@
    
   <span class="n">cache</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> <span class="c"># Values we need to compute gradients</span>
    
-  <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">cache</span></code></pre></div>
+  <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">cache</span></code></pre></figure>
 
 <blockquote>
-  <p>The backward pass will receive upstream derivatives and the <code>cache</code> object, and will return gradients with respect to the inputs and weights, like this:</p>
+  <p>The backward pass will receive upstream derivatives and the <code class="highlighter-rouge">cache</code> object, and will return gradients with respect to the inputs and weights, like this:</p>
 </blockquote>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_backward</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">cache</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Receive derivative of loss with respect to outputs and cache,</span>
-<span class="sd">  and compute derivative with respect to inputs.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_backward</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">cache</span><span class="p">):</span>
+  <span class="s">"""
+  Receive derivative of loss with respect to outputs and cache,
+  and compute derivative with respect to inputs.
+  """</span>
   <span class="c"># Unpack cache values</span>
   <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">cache</span>
   
@@ -112,30 +112,30 @@
   <span class="n">dx</span> <span class="o">=</span> <span class="c"># Derivative of loss with respect to x</span>
   <span class="n">dw</span> <span class="o">=</span> <span class="c"># Derivative of loss with respect to w</span>
   
-  <span class="k">return</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dw</span></code></pre></div>
+  <span class="k">return</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dw</span></code></pre></figure>
 
 <blockquote>
   <p>After implementing a bunch of layers this way, we will be able to easily combine them to build classifiers with different architectures.</p>
 </blockquote>
 
-<p>Below is a sample implementation of <code>layer_forward</code> and <code>layer_backward</code>.</p>
+<p>Below is a sample implementation of <code class="highlighter-rouge">layer_forward</code> and <code class="highlighter-rouge">layer_backward</code>.</p>
 
-<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Computes the forward pass for an affine (fully-connected) layer.</span>
-<span class="sd">  The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N</span>
-<span class="sd">  examples, where each example x[i] has shape (d_1, ..., d_k). We will</span>
-<span class="sd">  reshape each input into a vector of dimension D = d_1 * ... * d_k, and</span>
-<span class="sd">  then transform it to an output vector of dimension M.</span>
-<span class="sd">  Inputs:</span>
-<span class="sd">  - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)</span>
-<span class="sd">  - w: A numpy array of weights, of shape (D, M)</span>
-<span class="sd">  - b: A numpy array of biases, of shape (M,)</span>
-<span class="sd">  </span>
-<span class="sd">  Returns a tuple of:</span>
-<span class="sd">  - out: output, of shape (N, M)</span>
-<span class="sd">  - cache: (x, w, b)</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">layer_forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+  <span class="s">"""
+  Computes the forward pass for an affine (fully-connected) layer.
+  The input x has shape (N, d_1, ..., d_k) and contains a minibatch of N
+  examples, where each example x[i] has shape (d_1, ..., d_k). We will
+  reshape each input into a vector of dimension D = d_1 * ... * d_k, and
+  then transform it to an output vector of dimension M.
+  Inputs:
+  - x: A numpy array containing input data, of shape (N, d_1, ..., d_k)
+  - w: A numpy array of weights, of shape (D, M)
+  - b: A numpy array of biases, of shape (M,)
+  
+  Returns a tuple of:
+  - out: output, of shape (N, M)
+  - cache: (x, w, b)
+  """</span>
   <span class="n">out</span> <span class="o">=</span> <span class="bp">None</span>
   <span class="c">#############################################################################</span>
   <span class="c"># TODO: Implement the affine forward pass. Store the result in out. You     #</span>
@@ -149,20 +149,20 @@
   <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">cache</span>
 
 <span class="k">def</span> <span class="nf">layer_backward</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">cache</span><span class="p">):</span>
-  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">  Computes the backward pass for an affine layer.</span>
+  <span class="s">"""
+  Computes the backward pass for an affine layer.
 
-<span class="sd">  Inputs:</span>
-<span class="sd">  - dout: Upstream derivative, of shape (N, M)</span>
-<span class="sd">  - cache: Tuple of:</span>
-<span class="sd">    - x: Input data, of shape (N, d_1, ... d_k)</span>
-<span class="sd">    - w: Weights, of shape (D, M)</span>
+  Inputs:
+  - dout: Upstream derivative, of shape (N, M)
+  - cache: Tuple of:
+    - x: Input data, of shape (N, d_1, ... d_k)
+    - w: Weights, of shape (D, M)
 
-<span class="sd">  Returns a tuple of:</span>
-<span class="sd">  - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)</span>
-<span class="sd">  - dw: Gradient with respect to w, of shape (D, M)</span>
-<span class="sd">  - db: Gradient with respect to b, of shape (M,)</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+  Returns a tuple of:
+  - dx: Gradient with respect to x, of shape (N, d1, ..., d_k)
+  - dw: Gradient with respect to w, of shape (D, M)
+  - db: Gradient with respect to b, of shape (M,)
+  """</span>
   <span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">cache</span>
   <span class="n">dx</span><span class="p">,</span> <span class="n">dw</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
   <span class="c">#############################################################################</span>
@@ -170,23 +170,23 @@
   <span class="c">#############################################################################</span>
   <span class="n">dx</span> <span class="o">=</span> <span class="n">dout</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
   <span class="n">dw</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dout</span><span class="p">)</span>
-  <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+  <span class="n">db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
   <span class="c">#############################################################################</span>
   <span class="c">#                             END OF YOUR CODE                              #</span>
   <span class="c">#############################################################################</span>
-  <span class="k">return</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dw</span><span class="p">,</span> <span class="n">db</span></code></pre></div>
+  <span class="k">return</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dw</span><span class="p">,</span> <span class="n">db</span></code></pre></figure>
 
-<p>It is not difficult to derive gradients <code>dx</code> and <code>dw</code> and implement them in Python. The gradient <code>db</code>, however, requires careful thought. The expression <code>db = np.sum(dout, axis=0)</code> is not easy to understand. </p>
+<p>It is not difficult to derive gradients <code class="highlighter-rouge">dx</code> and <code class="highlighter-rouge">dw</code> and implement them in Python. The gradient <code class="highlighter-rouge">db</code>, however, requires careful thought. The expression <code class="highlighter-rouge">db = np.sum(dout, axis=0)</code> is not easy to understand.</p>
 
 <p>First, you need to understand what really happens inside this simple equation <script type="math/tex">out = xw + b</script>. One way to understand this is by analyzing dimensions of the matrices. That is, <script type="math/tex">\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(1 \times M)}b</script>.</p>
 
-<p>Do you notice incompatibility of <script type="math/tex">b</script>’s dimension and <script type="math/tex">out</script>’s? Think of it for a second and read on! </p>
+<p>Do you notice incompatibility of <script type="math/tex">b</script>’s dimension and <script type="math/tex">out</script>’s? Think of it for a second and read on!</p>
 
 <p>What happens in the expression is broadcast of <script type="math/tex">b</script> from <script type="math/tex">1 \times M</script> to <script type="math/tex">N \times M</script>. Intuitively, there is only one set of bias of size <script type="math/tex">M</script> which shares across all examples <script type="math/tex">x</script>. In fact, there is an <em>invisible input</em> for the bias term. That is, <script type="math/tex">\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b</script> where <script type="math/tex">ix</script> contains all 1’s and stays there just for the sake of facilitating later calculation. (As the term suggests, bias does not depend on the input.)</p>
 
-<p>That’s it for <code>layer_forward</code>. Now, let’s proceed to <code>layer_backward</code>.</p>
+<p>That’s it for <code class="highlighter-rouge">layer_forward</code>. Now, let’s proceed to <code class="highlighter-rouge">layer_backward</code>.</p>
 
-<p>Considering <script type="math/tex">\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b</script>, we can derive <script type="math/tex">db</script> (in short, for <script type="math/tex">\frac{dLoss}{db}</script>) using a chain rule with <script type="math/tex">\underset{(1 \times M)}{db} = \underset{(1 \times N)}{ix^\mathsf{T}} \underset{(N \times M)}{dout}</script>. Recall that <script type="math/tex">ix</script> is all 1’s; therefore, the expression just sums <script type="math/tex">dout</script> along axis = 0, that is, <code>db = np.sum(dout, axis=0)</code>.</p>
+<p>Considering <script type="math/tex">\underset{(N \times M)}{out} = \underset{(N \times D)}x\underset{(D \times M)}w + \underset{(N \times 1)}{ix}\underset{(1 \times M)}b</script>, we can derive <script type="math/tex">db</script> (in short, for <script type="math/tex">\frac{dLoss}{db}</script>) using a chain rule with <script type="math/tex">\underset{(1 \times M)}{db} = \underset{(1 \times N)}{ix^\mathsf{T}} \underset{(N \times M)}{dout}</script>. Recall that <script type="math/tex">ix</script> is all 1’s; therefore, the expression just sums <script type="math/tex">dout</script> along axis = 0, that is, <code class="highlighter-rouge">db = np.sum(dout, axis=0)</code>.</p>
 
 <p>Not really trivial, is it?</p>
 
@@ -254,7 +254,7 @@
             <footer class="site-footer">
               <section class="poweredby">Proudly published with <a href="http://jekyllrb.com"> Jekyll</a></section>              
               <div class="inner">
-                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2017<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
+                <section class="copyright">All content copyright <a href="/">Nimit Pattanasri</a> &copy; 2018<br>All rights reserved. <a class="subscribe" href="/feed.xml"> <span class="tooltip"> <i class="fa fa-rss"></i> </span></a></section>
               </div>
             </footer>
           </div>
